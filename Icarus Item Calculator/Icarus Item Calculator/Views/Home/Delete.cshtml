@@ -1,0 +1,41 @@
+﻿@model Icarus_Item_Calculator.Models.Item
+
+@{
+    ViewData["Title"] = "Item Details";
+}
+
+<h1>@Model.Name</h1>
+
+<h2>Recipe</h2>
+@if (Model.Recipe == null || !Model.Recipe.Any())
+{
+    <p>This is a base item with no recipe.</p>
+}
+else
+{
+    <ul>
+        @foreach (var recipeItem in Model.Recipe)
+        {
+            <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+        }
+    </ul>
+}
+
+<form asp-action="Details" method="post">
+    <div class="form-group">
+        <label for="quantity">Quantity to Craft:</label>
+        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="@ViewBag.Quantity" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Calculate</button>
+</form>
+
+@if (ViewBag.RequiredIngredients != null)
+{
+    <h2>Required Base Ingredients</h2>
+    <ul>
+        @foreach (var ingredient in ViewBag.RequiredIngredients)
+        {
+            <li>@ingredient.Key - Quantity: @ingredient.Value</li>
+        }
+    </ul>
+}

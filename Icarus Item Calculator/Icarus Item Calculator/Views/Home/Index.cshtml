@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Icarus_Item_Calculator.Models.Item>
+
+@{
+    ViewData["Title"] = "Items List";
+    var sortOrder = ViewData["CurrentSort"] as string;
+    var nameSortParam = sortOrder == "Name" ? "name_desc" : "Name";
+    var idSortParam = sortOrder == "Id" ? "id_desc" : "Id";
+}
+
+<h1>Items List</h1>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">Create New Item</a>
+</div>
+
+<form method="get" asp-action="Index">
+    <div class="form-group">
+        <input type="text" name="searchString" class="form-control" placeholder="Search items..." value="@ViewData["CurrentFilter"]" />
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@idSortParam">ItemId</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@nameSortParam">Name</a>
+            </th>
+            <th>Recipe</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.ItemId)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ItemId">@Html.DisplayFor(modelItem => item.Name)</a>
+                </td>
+                <td>
+                    @if (item.Recipe == null || !item.Recipe.Any())
+                    {
+                        <span>Base Item</span>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var recipeItem in item.Recipe)
+                            {
+                                <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+                            }
+                        </ul>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ItemId">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ItemId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

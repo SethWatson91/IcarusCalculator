@@ -1,0 +1,52 @@
+﻿@model Icarus_Item_Calculator.Models.ItemWithStepsViewModel
+
+@{
+    ViewData["Title"] = "Item Details";
+}
+
+<h1>@Model.Item.Name @if (Model.Quantity != null)
+    {
+        <span>(Quantity: @Model.Quantity)</span>
+    }</h1>
+
+<h2>Recipe</h2>
+@if (Model.Item.Recipe == null || !Model.Item.Recipe.Any())
+{
+    <p>This is a base item with no recipe.</p>
+}
+else
+{
+    <ul>
+        @foreach (var recipeItem in Model.Item.Recipe)
+        {
+            <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+        }
+    </ul>
+}
+
+<form asp-action="Details" method="post">
+    <div class="form-group">
+        <label for="Quantity">Quantity to Craft:</label>
+        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="@ViewBag.Quantity" required />
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Calculate</button>
+</form>
+
+@if (Model.RecipeSteps != null && Model.RecipeSteps.Any())
+{
+    <h2>Recipe Breakdown</h2>
+    <ol>
+        @foreach (var step in Model.RecipeSteps)
+        {
+            <li>
+                <strong>@step.Quantity @step.ItemName</strong> requires:
+                <ul>
+                    @foreach (var ingredient in step.Ingredients)
+                    {
+                        <li>@ingredient.Quantity @ingredient.ItemName @(ingredient.IsBase ? "(Base)" : "")</li>
+                    }
+                </ul>
+            </li>
+        }
+    </ol>
+}
