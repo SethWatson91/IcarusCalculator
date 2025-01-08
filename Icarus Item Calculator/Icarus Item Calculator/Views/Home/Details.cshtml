@@ -4,10 +4,12 @@
     ViewData["Title"] = "Item Details";
 }
 
-<h1>@Model.Item.Name @if (Model.Quantity != null)
+<h1>
+    @Model.Item.Name @if (Model.Quantity != null)
     {
         <span>(Quantity: @Model.Quantity)</span>
-    }</h1>
+    }
+</h1>
 
 <h2>Recipe</h2>
 @if (Model.Item.Recipe == null || !Model.Item.Recipe.Any())
@@ -27,26 +29,63 @@ else
 <form asp-action="Details" method="post">
     <div class="form-group">
         <label for="Quantity">Quantity to Craft:</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="@ViewBag.Quantity" required />
+        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="@Model.Quantity" required />
     </div>
     <button type="submit" class="btn btn-primary mt-3">Calculate</button>
 </form>
 
-@if (Model.RecipeSteps != null && Model.RecipeSteps.Any())
-{
-    <h2>Recipe Breakdown</h2>
-    <ol>
-        @foreach (var step in Model.RecipeSteps)
+<div class="recipe-container">
+    <div class="recipe-steps">
+        <h2>Recipe Breakdown</h2>
+        @if (Model.RecipeSteps == null || !Model.RecipeSteps.Any())
         {
-            <li>
-                <strong>@step.Quantity @step.ItemName</strong> requires:
-                <ul>
-                    @foreach (var ingredient in step.Ingredients)
-                    {
-                        <li>@ingredient.Quantity @ingredient.ItemName @(ingredient.IsBase ? "(Base)" : "")</li>
-                    }
-                </ul>
-            </li>
+            <p>This is a base item with no recipe.</p>
         }
-    </ol>
-}
+        else
+        {
+            <ol>
+                @foreach (var step in Model.RecipeSteps)
+                {
+                    <li>
+                        <strong>@step.Quantity @step.ItemName</strong> requires:
+                        <ul>
+                            @foreach (var ingredient in step.Ingredients)
+                            {
+                                <li>@ingredient.Quantity @ingredient.ItemName @(ingredient.IsBase ? "(Base)" : "")</li>
+                            }
+                        </ul>
+                    </li>
+                }
+            </ol>
+        }
+    </div>
+
+    @if (Model.BaseItemsTotal != null && Model.BaseItemsTotal.Any())
+    {
+        <div class="base-items">
+            <h2>Total Base Ingredients Required</h2>
+            <ul>
+                @foreach (var item in Model.BaseItemsTotal)
+                {
+                    <li>@item.Key - Quantity: @item.Value</li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+<style>
+    .recipe-container {
+        display: flex;
+        gap: 20px; /* Space between columns */
+    }
+
+    .recipe-steps {
+        flex: 2; /* Takes up twice as much space as base-items */
+    }
+
+    .base-items {
+        flex: 1; /* Takes up the remaining space */
+        padding-left: 20px; /* Adds some space between the columns */
+    }
+</style>

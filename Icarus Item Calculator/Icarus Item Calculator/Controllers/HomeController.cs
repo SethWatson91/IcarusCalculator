@@ -276,28 +276,31 @@ namespace Icarus_Item_Calculator.Controllers
 
             await LoadNestedRecipes(item);
 
-            var recipeSteps = CalculateRecipeSteps(item, quantity);
+            var (recipeSteps, baseItemsTotal) = CalculateRecipeSteps(item, quantity);
 
             var model = new ItemWithStepsViewModel
             {
                 Item = item,
                 RecipeSteps = recipeSteps,
-                Quantity = quantity
+                Quantity = quantity,
+                BaseItemsTotal = baseItemsTotal  // Add this to your view model
             };
 
             return View(model);
         }
 
-        private List<RecipeStep> CalculateRecipeSteps(Item item, double quantity)
+        private (List<RecipeStep>, Dictionary<string, double>) CalculateRecipeSteps(Item item, double quantity)
         {
-            var steps = new List<RecipeStep>();
+            List<RecipeStep> steps = new List<RecipeStep>();
+            Dictionary<string, double> baseItemsTotal = new Dictionary<string, double>();
             // Recursive function to break down the recipe
-            CalculateStepsRecursive(item, quantity, steps, new Dictionary<int, Dictionary<string, double>>());
-            return steps;
+            CalculateStepsRecursive(item, quantity, steps, new Dictionary<int, Dictionary<string, double>>(), baseItemsTotal);
+            return (steps, baseItemsTotal);
         }
-        private void CalculateStepsRecursive(Item item, double quantity, List<RecipeStep> steps, Dictionary<int, Dictionary<string, double>> accumulatedIngredients)
+        private void CalculateStepsRecursive(Item item, double quantity, List<RecipeStep> steps, Dictionary<int, Dictionary<string, double>> accumulatedIngredients, Dictionary<string, double> baseItemsTotal)
         {
-            if (item == null || accumulatedIngredients.ContainsKey(item.ItemId)) return;
+            if (item == null) return;
+            // We only initialize for the current item because we want to track for this specific run
             accumulatedIngredients[item.ItemId] = new Dictionary<string, double>();
 
             steps.Add(new RecipeStep
@@ -307,16 +310,21 @@ namespace Icarus_Item_Calculator.Controllers
                 Ingredients = item.Recipe.Select(r =>
                 {
                     // calculate total quantity needed for ingredient
-                    double totalQuantity = r.Quantity * quantity;
+                    double totalQuantity = r.Quantity * quantity;   
+                    
+                    accumulatedIngredients[item.ItemId][r.Item.Name] = totalQuantity;
 
-                    //if this ingredient has been added before, accumulate its quantity
-                    if (accumulatedIngredients[item.ItemId].ContainsKey(r.Item.Name))
+                    // If it's a base item, add or update in baseItemsTotal
+                    if (r.Item.IsBaseItem)
                     {
-                        accumulatedIngredients[item.ItemId][r.Item.Name] += totalQuantity;
-                    }
-                    else
-                    {
-                        accumulatedIngredients[item.ItemId][r.Item.Name] = totalQuantity;
+                        if (baseItemsTotal.ContainsKey(r.Item.Name))
+                        {
+                            baseItemsTotal[r.Item.Name] += totalQuantity;
+                        }
+                        else
+                        {
+                            baseItemsTotal[r.Item.Name] = totalQuantity;
+                        }
                     }
 
                     return new IngredientStep
@@ -330,7 +338,7 @@ namespace Icarus_Item_Calculator.Controllers
 
             foreach (var recipeItem in item.Recipe.Where(r => !r.Item.IsBaseItem))
             {
-                CalculateStepsRecursive(recipeItem.Item, recipeItem.Quantity * quantity, steps, accumulatedIngredients);
+                CalculateStepsRecursive(recipeItem.Item, recipeItem.Quantity * quantity, steps, accumulatedIngredients, baseItemsTotal);
             }
         }
 
