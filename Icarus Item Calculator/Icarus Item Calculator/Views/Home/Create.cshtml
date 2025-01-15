@@ -1,88 +1,24 @@
 ﻿@model Icarus_Item_Calculator.Models.Item
 
 @{
-    ViewData["Title"] = "Create New Item";
+    ViewData["Title"] = Model.ItemId == 0 ? "Create New Item" : "Edit Item";
 }
 
-<h1>Create New Item</h1>
+<h1>@ViewData["Title"]</h1>
 
 <h4>Item</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="Recipe" class="control-label">Recipe</label>
-                <input type="text" id="recipeSearch" class="form-control" placeholder="Search for recipe items..." />
-                <select id="selectedItems" name="selectedItems" class="form-control" multiple>
-                    <option value="0">No Recipe</option>
-                    @foreach (var item in ViewBag.Items)
-                    {
-                        <option value="@item.Value">@item.Text</option>
-                    }
-                </select>
-            </div>
-            <div id="quantitiesContainer" class="form-group" style="display: none;">
-                <label for="Quantities" class="control-label">Quantities</label>
-                @foreach (var item in ViewBag.Items)
-                {
-                    <div class="quantity-input" data-item-id="@item.Value" style="display: none;">
-                        <input type="number" name="quantities[@item.Value]" class="form-control" value="0" placeholder="Quantity for @item.Text" />
-                    </div>
-                }
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        @await Html.PartialAsync("_ItemFormPartial", Model)
     </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
 @section Scripts {
-    <script>
-        document.getElementById('recipeSearch').addEventListener('input', function () {
-            var searchValue = this.value.toLowerCase();
-            var options = document.getElementById('selectedItems').options;
-
-            for (var i = 0; i < options.length; i++) {
-                var optionText = options[i].text.toLowerCase();
-                if (optionText.includes(searchValue)) {
-                    options[i].style.display = 'block';
-                } else {
-                    options[i].style.display = 'none';
-                }
-            }
-        });
-
-        document.getElementById('selectedItems').addEventListener('change', function () {
-            var selectedOptions = Array.from(this.selectedOptions).map(option => option.value);
-            var quantitiesContainer = document.getElementById('quantitiesContainer');
-            var quantityInputs = document.querySelectorAll('.quantity-input');
-
-            if (selectedOptions.includes('0')) {
-                quantitiesContainer.style.display = 'none';
-                quantityInputs.forEach(input => input.style.display = 'none');
-            } else {
-                quantitiesContainer.style.display = 'block';
-                quantityInputs.forEach(input => {
-                    if (selectedOptions.includes(input.getAttribute('data-item-id'))) {
-                        input.style.display = 'block';
-                    } else {
-                        input.style.display = 'none';
-                    }
-                });
-            }
-        });
-    </script>
+    @await Html.PartialAsync("_ItemScriptsPartial")
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

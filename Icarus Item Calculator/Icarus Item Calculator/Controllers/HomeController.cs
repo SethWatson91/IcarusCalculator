@@ -54,8 +54,15 @@ namespace Icarus_Item_Calculator.Controllers
         // GET: Home/Create
         public IActionResult Create()
         {
+            Item item = new Item();
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
             ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
-            return View();
+            return View(item);
         }
 
         [HttpPost]
