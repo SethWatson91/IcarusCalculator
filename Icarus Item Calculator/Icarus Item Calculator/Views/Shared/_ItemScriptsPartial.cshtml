@@ -16,18 +16,10 @@
             }, 300); // 300ms delay before search is applied
         });
 
-        // Single-click to add/remove items
-        selectedItems.addEventListener('click', function (event) {
-            if (event.target.tagName === 'OPTION') {
-                toggleOption(event.target);
-                updateQuantities();
-            }
+        // Update quantities based on selection (standard multi-select behavior)
+        selectedItems.addEventListener('change', function () {
+            updateQuantities();
         });
-
-        function toggleOption(option) {
-            option.selected = !option.selected;
-            option.setAttribute('selected', option.selected ? '' : null);
-        }
 
         function updateQuantities() {
             const selectedOptionValues = Array.from(selectedItems.selectedOptions).map(option => option.value);
@@ -40,7 +32,6 @@
                 Array.from(selectedItems.options).forEach(option => {
                     if (option.value !== '0') {
                         option.selected = false;
-                        option.setAttribute('selected', null);
                     }
                 });
                 Array.from(quantitiesContainer.querySelectorAll('.quantity-input')).forEach(input => input.style.display = 'none');

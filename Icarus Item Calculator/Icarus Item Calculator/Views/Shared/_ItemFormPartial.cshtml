@@ -29,7 +29,8 @@
             var quantity = Model.ItemId != 0 ? Model.Recipe.FirstOrDefault(r => r.ItemId == int.Parse(item.Value))?.Quantity ?? 0 : 0;
             var displayStyle = Model.ItemId != 0 && Model.Recipe.Any(r => r.ItemId == int.Parse(item.Value)) ? "block" : "none";
             <div class="quantity-input" data-item-id="@item.Value" style="display: @displayStyle">
-                <input type="number" name="quantities[@item.Value]" class="form-control" value="@quantity" placeholder="Quantity for @item.Text" />
+                <label for="quantity_@item.Value" class="control-label">@item.Text</label>
+                <input id="quantity_@item.Value" type="number" name="quantities[@item.Value]" class="form-control" value="@quantity" min="0" />
             </div>
         }
     </div>
