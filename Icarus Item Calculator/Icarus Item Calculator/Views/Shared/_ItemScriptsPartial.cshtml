@@ -3,13 +3,17 @@
         const recipeSearch = document.getElementById('recipeSearch');
         const selectedItems = document.getElementById('selectedItems');
         const quantitiesContainer = document.getElementById('quantitiesContainer');
+        let searchTimeout;
 
-        // Search functionality
+        // Debounce the search function
         recipeSearch.addEventListener('input', function () {
-            const searchValue = this.value.toLowerCase();
-            Array.from(selectedItems.options).forEach(option => {
-                option.style.display = option.text.toLowerCase().includes(searchValue) ? '' : 'none';
-            });
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchValue = this.value.toLowerCase();
+                Array.from(selectedItems.options).forEach(option => {
+                    option.style.display = option.text.toLowerCase().includes(searchValue) ? '' : 'none';
+                });
+            }, 300); // 300ms delay before search is applied
         });
 
         // Single-click to add/remove items
