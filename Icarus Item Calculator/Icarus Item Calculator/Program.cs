@@ -1,3 +1,4 @@
+using Icarus_Item_Calculator.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,7 @@ builder.Services.AddDbContext<ItemContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<ItemServices>();
 
 var app = builder.Build();
 
