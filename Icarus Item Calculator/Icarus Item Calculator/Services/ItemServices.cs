@@ -1,8 +1,5 @@
 ﻿using Icarus_Item_Calculator.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Icarus_Item_Calculator.Services
 {
