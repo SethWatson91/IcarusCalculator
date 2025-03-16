@@ -74,40 +74,53 @@ namespace Icarus_Item_Calculator.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,IsCraftable,IsCraftingInterface")] Item item,
-                                                        int[] selectedItems, Dictionary<double, double> quantities)
+        public async Task<IActionResult> Create([Bind("Name")] Item item,
+                                                        int[] selectedItems, Dictionary<int, double> quantities)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                if (selectedItems.Contains(0))
+                ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
+                return View(item);
+            }
+
+            if (selectedItems == null || !selectedItems.Any())
+            {
+                item.Recipe = new List<RecipeItem>();
+            }
+            else if (selectedItems.Contains(0))
+            {
+                item.Recipe = new List<RecipeItem>();
+            }
+            else
+            {
+                item.Recipe = new List<RecipeItem>();
+                foreach (var itemId in selectedItems)
                 {
-                    item.Recipe = new List<RecipeItem>();
-                }
-                else
-                {
-                    item.Recipe = new List<RecipeItem>();
-                    foreach (var itemId in selectedItems)
+                    var recipeItem = await _context.Items.FindAsync(itemId);
+                    if (recipeItem != null && quantities.TryGetValue(itemId, out double quantity) && quantity > 0)
                     {
-                        var recipeItem = await _context.Items.FindAsync(itemId);
-                        if (recipeItem != null && quantities.TryGetValue(itemId, out double quantity))
+                        item.Recipe.Add(new RecipeItem
                         {
-                            item.Recipe.Add(new RecipeItem
-                            {
-                                ItemId = itemId,
-                                Quantity = quantity,
-                                ParentItemId = item.ItemId
-                            });
-                        }
+                            ItemId = itemId,
+                            Quantity = quantity,
+                            ParentItemId = item.ItemId
+                        });
                     }
                 }
+            }
 
+            try
+            {
                 _context.Add(item);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
-            return View(item);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while saving the item.");
+                ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
+                return View(item);
+            }
         }
 
 
@@ -136,7 +149,7 @@ namespace Icarus_Item_Calculator.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ItemId,Name,IsCraftable,IsCraftingInterface")] Item item,
-                                                int[] selectedItems, Dictionary<double, double> quantities)
+                                                int[] selectedItems, Dictionary<int, double> quantities)
         {
             if (id != item.ItemId)
             {
@@ -230,14 +243,30 @@ namespace Icarus_Item_Calculator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _context.Items
+                .Include(i => i.Recipe)
+                .FirstOrDefaultAsync(i => i.ItemId == id);
             if (item == null)
             {
                 return NotFound();
             }
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            try
+            {
+                _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                // Check if the item is used as an ingredient
+                if (_context.RecipeItems.Any(ri => ri.ItemId == id))
+                {
+                    ModelState.AddModelError("", "Cannot delete this item because it is used in other recipes.");
+                    return View(item);
+                }
+                throw; // Re-throw if it's another issue
+            }
         }
 
 
@@ -285,6 +314,12 @@ namespace Icarus_Item_Calculator.Controllers
 
             await _itemServices.LoadNestedRecipesAsync(item);
             var (recipeSteps, baseItemsTotal) = _itemServices.CalculateRecipeSteps(item, quantity);
+
+            //if (quantity <= 0)
+            //{
+            //    ModelState.AddModelError("quantity", "Quantity must be greater than zero.");
+            //    return View(model);
+            //}
 
             var model = new ItemWithStepsViewModel
             {

@@ -18,12 +18,14 @@ public class ItemContext : DbContext
         modelBuilder.Entity<RecipeItem>()
             .HasOne(ri => ri.Item)
             .WithMany()
-            .HasForeignKey(ri => ri.ItemId);
+            .HasForeignKey(ri => ri.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<RecipeItem>()
             .HasOne(ri => ri.ParentItem)
             .WithMany(i => i.Recipe)
-            .HasForeignKey(ri => ri.ParentItemId);
+            .HasForeignKey(ri => ri.ParentItemId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Seed data if necessary
         modelBuilder.Entity<Item>().HasData(

@@ -12,6 +12,7 @@ namespace Icarus_Item_Calculator.Models
         public Item Item { get; set; }
 
         [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]
         public double Quantity { get; set; }
 
         [Required]
