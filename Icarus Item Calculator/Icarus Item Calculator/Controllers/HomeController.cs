@@ -28,8 +28,9 @@ namespace Icarus_Item_Calculator.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             var items = from i in _context.Items
-                        .Include(i => i.Recipe)
-                        .ThenInclude(r => r.Item)
+                        .Include(i => i.Recipes)
+                        .ThenInclude(r => r.Ingredients)
+                        .ThenInclude(ri => ri.Item)
                         select i;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -60,67 +61,53 @@ namespace Icarus_Item_Calculator.Controllers
         // GET: Home/Create
         public IActionResult Create()
         {
-            Item item = new Item();
+            // Pass the list of items as a strongly-typed collection
+            ViewData["AvailableItems"] = _context.Items
+                .Select(i => new SelectListItem
+                {
+                    Value = i.ItemId.ToString(),
+                    Text = i.Name
+                })
+                .ToList();
 
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
-            return View(item);
+            return View(new Item());
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Item item,
+        public async Task<IActionResult> Create([Bind("Name, IsBaseItem")] Item item,
                                                         int[] selectedItems, Dictionary<int, double> quantities)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
-                return View(item);
-            }
+                var recipe = new Recipe { Item = item };
+                item.Recipes.Add(recipe);
 
-            if (selectedItems == null || !selectedItems.Any())
-            {
-                item.Recipe = new List<RecipeItem>();
-            }
-            else if (selectedItems.Contains(0))
-            {
-                item.Recipe = new List<RecipeItem>();
-            }
-            else
-            {
-                item.Recipe = new List<RecipeItem>();
-                foreach (var itemId in selectedItems)
+                if (selectedItems != null && selectedItems.Any() && !selectedItems.Contains(0))
                 {
-                    var recipeItem = await _context.Items.FindAsync(itemId);
-                    if (recipeItem != null && quantities.TryGetValue(itemId, out double quantity) && quantity > 0)
+                    foreach (var itemId in selectedItems)
                     {
-                        item.Recipe.Add(new RecipeItem
+                        var ingredient = await _context.Items.FindAsync(itemId);
+                        if (ingredient != null && quantities.TryGetValue(itemId, out double quantity))
                         {
-                            ItemId = itemId,
-                            Quantity = quantity,
-                            ParentItemId = item.ItemId
-                        });
+                            recipe.Ingredients.Add(new RecipeItem
+                            {
+                                ItemId = itemId,
+                                Quantity = quantity,
+                                Recipe = recipe
+                            });
+                        }
                     }
                 }
-            }
 
-            try
-            {
                 _context.Add(item);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "An error occurred while saving the item.");
-                ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
-                return View(item);
-            }
+
+            ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
+            return View(item);
         }
 
 
@@ -133,14 +120,25 @@ namespace Icarus_Item_Calculator.Controllers
             }
 
             var item = await _context.Items
-                .Include(i => i.Recipe)
+                .Include(i => i.Recipes)
+                .ThenInclude(r => r.Ingredients)
+                .ThenInclude(ri => ri.Item)
                 .FirstOrDefaultAsync(m => m.ItemId == id);
+
             if (item == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Items = new SelectList(_context.Items, "ItemId", "Name");
+            // Pass the list of items as a strongly-typed collection
+            ViewData["AvailableItems"] = _context.Items
+                .Select(i => new SelectListItem
+                {
+                    Value = i.ItemId.ToString(),
+                    Text = i.Name
+                })
+                .ToList();
+
             return View(item);
         }
 
@@ -148,8 +146,8 @@ namespace Icarus_Item_Calculator.Controllers
         // POST: Home/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ItemId,Name,IsCraftable,IsCraftingInterface")] Item item,
-                                                int[] selectedItems, Dictionary<int, double> quantities)
+        public async Task<IActionResult> Edit(int id, [Bind("ItemId,Name,IsBaseItem")] Item item,
+                                      int[] selectedItems, Dictionary<int, double> quantities)
         {
             if (id != item.ItemId)
             {
@@ -161,7 +159,8 @@ namespace Icarus_Item_Calculator.Controllers
                 try
                 {
                     var existingItem = await _context.Items
-                        .Include(i => i.Recipe)
+                        .Include(i => i.Recipes)
+                        .ThenInclude(r => r.Ingredients)
                         .FirstOrDefaultAsync(m => m.ItemId == id);
 
                     if (existingItem == null)
@@ -170,24 +169,27 @@ namespace Icarus_Item_Calculator.Controllers
                     }
 
                     existingItem.Name = item.Name;
+                    existingItem.IsBaseItem = item.IsBaseItem;
 
-                    if (selectedItems.Contains(0))
+                    var recipe = existingItem.Recipes.FirstOrDefault() ?? new Recipe { ItemId = existingItem.ItemId };
+                    if (!existingItem.Recipes.Any())
                     {
-                        existingItem.Recipe.Clear();
+                        existingItem.Recipes.Add(recipe);
                     }
-                    else
+
+                    recipe.Ingredients.Clear();
+                    if (selectedItems != null && selectedItems.Any() && !selectedItems.Contains(0))
                     {
-                        existingItem.Recipe.Clear();
                         foreach (var itemId in selectedItems)
                         {
-                            var recipeItem = await _context.Items.FindAsync(itemId);
-                            if (recipeItem != null && quantities.TryGetValue(itemId, out double quantity))
+                            var ingredient = await _context.Items.FindAsync(itemId);
+                            if (ingredient != null && quantities.TryGetValue(itemId, out double quantity))
                             {
-                                existingItem.Recipe.Add(new RecipeItem
+                                recipe.Ingredients.Add(new RecipeItem
                                 {
                                     ItemId = itemId,
                                     Quantity = quantity,
-                                    ParentItemId = existingItem.ItemId
+                                    RecipeId = recipe.RecipeId
                                 });
                             }
                         }
@@ -244,8 +246,10 @@ namespace Icarus_Item_Calculator.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var item = await _context.Items
-                .Include(i => i.Recipe)
+                .Include(i => i.Recipes)              // Updated from Recipe to Recipes
+                .ThenInclude(r => r.Ingredients)      // Include Ingredients for checking dependencies
                 .FirstOrDefaultAsync(i => i.ItemId == id);
+
             if (item == null)
             {
                 return NotFound();
@@ -253,17 +257,17 @@ namespace Icarus_Item_Calculator.Controllers
 
             try
             {
-                _context.Items.Remove(item);
+                _context.Items.Remove(item); // This will cascade delete Recipes and their Ingredients
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
             {
-                // Check if the item is used as an ingredient
+                // Check if the item is used as an ingredient in any RecipeItem
                 if (_context.RecipeItems.Any(ri => ri.ItemId == id))
                 {
-                    ModelState.AddModelError("", "Cannot delete this item because it is used in other recipes.");
-                    return View(item);
+                    ModelState.AddModelError("", "Cannot delete this item because it is used as an ingredient in other recipes.");
+                    return View(item); // Return to the Delete view with the error
                 }
                 throw; // Re-throw if it's another issue
             }
@@ -280,8 +284,9 @@ namespace Icarus_Item_Calculator.Controllers
             }
 
             var item = await _context.Items
-                .Include(i => i.Recipe)
-                    .ThenInclude(r => r.Item)
+                .Include(i => i.Recipes)              // Updated from Recipe to Recipes
+                .ThenInclude(r => r.Ingredients)      // Include the Ingredients collection
+                .ThenInclude(ri => ri.Item)           // Include the Item for each RecipeItem
                 .FirstOrDefaultAsync(m => m.ItemId == id);
 
             if (item == null)
@@ -303,8 +308,9 @@ namespace Icarus_Item_Calculator.Controllers
         public async Task<IActionResult> Details(int id, double quantity)
         {
             var item = await _context.Items
-                .Include(i => i.Recipe)
-                    .ThenInclude(r => r.Item)
+                .Include(i => i.Recipes)
+                .ThenInclude(r => r.Ingredients)
+                .ThenInclude(ri => ri.Item)
                 .FirstOrDefaultAsync(i => i.ItemId == id);
 
             if (item == null)
@@ -312,24 +318,42 @@ namespace Icarus_Item_Calculator.Controllers
                 return NotFound();
             }
 
-            await _itemServices.LoadNestedRecipesAsync(item);
-            var (recipeSteps, baseItemsTotal) = _itemServices.CalculateRecipeSteps(item, quantity);
-
-            //if (quantity <= 0)
-            //{
-            //    ModelState.AddModelError("quantity", "Quantity must be greater than zero.");
-            //    return View(model);
-            //}
-
             var model = new ItemWithStepsViewModel
             {
                 Item = item,
-                RecipeSteps = recipeSteps,
-                Quantity = quantity,
-                BaseItemsTotal = baseItemsTotal 
+                RecipeSteps = new List<RecipeStep>(),
+                Quantity = quantity
             };
 
+            foreach (var recipe in item.Recipes)
+            {
+                await _itemServices.LoadNestedRecipesAsync(recipe);
+                var (recipeSteps, baseItemsTotal) = _itemServices.CalculateRecipeSteps(recipe, quantity);
+                model.RecipeSteps.AddRange(recipeSteps);
+                model.BaseItemsTotal = baseItemsTotal; // Note: This overwrites for each recipe; adjust as needed
+            }
+
             return View(model);
+        }
+        private async Task LoadNestedRecipesAsync(Recipe recipe)
+        {
+            foreach (var recipeItem in recipe.Ingredients)
+            {
+                if (recipeItem.Item != null)
+                {
+                    await _context.Entry(recipeItem.Item)
+                        .Collection(i => i.Recipes)
+                        .Query()
+                        .Include(r => r.Ingredients)
+                        .ThenInclude(ri => ri.Item)
+                        .LoadAsync();
+
+                    foreach (var nestedRecipe in recipeItem.Item.Recipes)
+                    {
+                        await LoadNestedRecipesAsync(nestedRecipe);
+                    }
+                }
+            }
         }
     }
 }

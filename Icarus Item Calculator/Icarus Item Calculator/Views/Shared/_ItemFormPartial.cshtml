@@ -1,5 +1,9 @@
 ﻿@model Icarus_Item_Calculator.Models.Item
 
+@{
+    var availableItems = ViewData["AvailableItems"] as List<SelectListItem>;
+}
+
 <form asp-action="@(Model.ItemId == 0 ? "Create" : "Edit")" method="post">
     @if (Model.ItemId != 0)
     {
@@ -11,26 +15,25 @@
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label for="Recipe" class="control-label">Recipe</label>
-        <input type="text" id="recipeSearch" class="form-control" placeholder="Search for recipe items..." />
+        <label for="Recipe" class="control-label">Recipe Ingredients</label>
         <select id="selectedItems" name="selectedItems" class="form-control" multiple>
             <option value="0">No Recipe</option>
-            @foreach (var item in ViewBag.Items)
+            @foreach (var item in availableItems)
             {
-                var selected = Model.ItemId != 0 && Model.Recipe.Any(r => r.ItemId == int.Parse(item.Value)) ? "selected=\"selected\"" : "";
-                @: <option value="@item.Value" @Html.Raw(selected)>@item.Text</option>
+                var isSelected = Model.ItemId != 0 && Model.Recipes.Any(r => r.Ingredients.Any(ri => ri.ItemId == int.Parse(item.Value)));
+                <option value="@item.Value" selected="@(isSelected ? "selected" : null)">@item.Text</option>
             }
         </select>
     </div>
     <div id="quantitiesContainer" class="form-group">
         <label for="Quantities" class="control-label">Quantities</label>
-        @foreach (var item in ViewBag.Items)
+        @foreach (var item in availableItems)
         {
-            var quantity = Model.ItemId != 0 ? Model.Recipe.FirstOrDefault(r => r.ItemId == int.Parse(item.Value))?.Quantity ?? 0 : 0;
-            var displayStyle = Model.ItemId != 0 && Model.Recipe.Any(r => r.ItemId == int.Parse(item.Value)) ? "block" : "none";
+            var quantity = Model.ItemId != 0 ? Model.Recipes.FirstOrDefault()?.Ingredients.FirstOrDefault(ri => ri.ItemId == int.Parse(item.Value))?.Quantity ?? 0 : 0;
+            var displayStyle = Model.ItemId != 0 && Model.Recipes.Any(r => r.Ingredients.Any(ri => ri.ItemId == int.Parse(item.Value))) ? "block" : "none";
             <div class="quantity-input" data-item-id="@item.Value" style="display: @displayStyle">
                 <label for="quantity_@item.Value" class="control-label">@item.Text</label>
-                <input id="quantity_@item.Value" type="number" name="quantities[@item.Value]" class="form-control" value="@quantity" min="0" />
+                <input id="quantity_@item.Value" type="number" name="quantities[@item.Value]" class="form-control" value="@quantity" min="0" step="0.1" />
             </div>
         }
     </div>
@@ -38,3 +41,19 @@
         <input type="submit" value="@(Model.ItemId == 0 ? "Create" : "Save")" class="btn btn-primary" />
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#selectedItems').change(function () {
+                var selectedIds = $(this).val();
+                $('.quantity-input').hide();
+                if (selectedIds && selectedIds.length > 0 && !selectedIds.includes("0")) {
+                    selectedIds.forEach(function (id) {
+                        $('.quantity-input[data-item-id="' + id + '"]').show();
+                    });
+                }
+            });
+        });
+    </script>
+}

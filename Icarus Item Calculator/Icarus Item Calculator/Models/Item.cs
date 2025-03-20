@@ -14,7 +14,7 @@ namespace Icarus_Item_Calculator.Models
 
         public bool IsBaseItem { get; set; } = false;
 
-        public List<RecipeItem> Recipe { get; set; } = new List<RecipeItem>();
+        public List<Recipe> Recipes { get; set; } = new List<Recipe>();
 
     }
 }

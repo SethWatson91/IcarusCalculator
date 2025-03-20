@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Icarus_Item_Calculator.Migrations
 {
     [DbContext(typeof(ItemContext))]
-    [Migration("20250101213431_ChangedSeedData")]
-    partial class ChangedSeedData
+    [Migration("20250316203213_UpdateToMultipleRecipes")]
+    partial class UpdateToMultipleRecipes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1059,6 +1059,41 @@ namespace Icarus_Item_Calculator.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Icarus_Item_Calculator.Models.Recipe", b =>
+                {
+                    b.Property<int>("RecipeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipeId"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RecipeId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("Recipes");
+
+                    b.HasData(
+                        new
+                        {
+                            RecipeId = 1,
+                            ItemId = 1
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            ItemId = 3
+                        },
+                        new
+                        {
+                            RecipeId = 3,
+                            ItemId = 3
+                        });
+                });
+
             modelBuilder.Entity("Icarus_Item_Calculator.Models.RecipeItem", b =>
                 {
                     b.Property<int>("RecipeItemId")
@@ -1070,17 +1105,17 @@ namespace Icarus_Item_Calculator.Migrations
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParentItemId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Quantity")
                         .HasColumnType("float");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
 
                     b.HasKey("RecipeItemId");
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("ParentItemId");
+                    b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeItems");
 
@@ -1089,2704 +1124,2715 @@ namespace Icarus_Item_Calculator.Migrations
                         {
                             RecipeItemId = 1,
                             ItemId = 2,
-                            ParentItemId = 1,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 1
                         },
                         new
                         {
                             RecipeItemId = 2,
                             ItemId = 61,
-                            ParentItemId = 3,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 3
                         },
                         new
                         {
                             RecipeItemId = 3,
                             ItemId = 20,
-                            ParentItemId = 3,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 3
                         },
                         new
                         {
                             RecipeItemId = 4,
                             ItemId = 6,
-                            ParentItemId = 5,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 5
                         },
                         new
                         {
                             RecipeItemId = 5,
                             ItemId = 59,
-                            ParentItemId = 6,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 6
                         },
                         new
                         {
                             RecipeItemId = 6,
                             ItemId = 1,
-                            ParentItemId = 6,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 6
                         },
                         new
                         {
                             RecipeItemId = 7,
                             ItemId = 22,
-                            ParentItemId = 6,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 6
                         },
                         new
                         {
                             RecipeItemId = 8,
                             ItemId = 42,
-                            ParentItemId = 6,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 6
                         },
                         new
                         {
                             RecipeItemId = 9,
                             ItemId = 59,
-                            ParentItemId = 11,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 11
                         },
                         new
                         {
                             RecipeItemId = 10,
                             ItemId = 38,
-                            ParentItemId = 11,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 11
                         },
                         new
                         {
                             RecipeItemId = 11,
                             ItemId = 29,
-                            ParentItemId = 11,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 11
                         },
                         new
                         {
                             RecipeItemId = 12,
                             ItemId = 42,
-                            ParentItemId = 11,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 11
                         },
                         new
                         {
                             RecipeItemId = 13,
                             ItemId = 11,
-                            ParentItemId = 12,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 12
                         },
                         new
                         {
                             RecipeItemId = 14,
                             ItemId = 69,
-                            ParentItemId = 13,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 13
                         },
                         new
                         {
                             RecipeItemId = 15,
                             ItemId = 59,
-                            ParentItemId = 13,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 13
                         },
                         new
                         {
                             RecipeItemId = 16,
                             ItemId = 74,
-                            ParentItemId = 13,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 13
                         },
                         new
                         {
                             RecipeItemId = 17,
                             ItemId = 16,
-                            ParentItemId = 14,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 14
                         },
                         new
                         {
                             RecipeItemId = 18,
                             ItemId = 14,
-                            ParentItemId = 15,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 15
                         },
                         new
                         {
                             RecipeItemId = 19,
                             ItemId = 14,
-                            ParentItemId = 17,
-                            Quantity = 0.20000000000000001
+                            Quantity = 0.20000000000000001,
+                            RecipeId = 17
                         },
                         new
                         {
                             RecipeItemId = 20,
                             ItemId = 4,
-                            ParentItemId = 19,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 19
                         },
                         new
                         {
                             RecipeItemId = 21,
                             ItemId = 22,
-                            ParentItemId = 21,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 21
                         },
                         new
                         {
                             RecipeItemId = 22,
                             ItemId = 42,
-                            ParentItemId = 21,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 21
                         },
                         new
                         {
                             RecipeItemId = 23,
                             ItemId = 17,
-                            ParentItemId = 21,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 21
                         },
                         new
                         {
                             RecipeItemId = 24,
                             ItemId = 30,
-                            ParentItemId = 21,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 21
                         },
                         new
                         {
                             RecipeItemId = 25,
                             ItemId = 70,
-                            ParentItemId = 22,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 22
                         },
                         new
                         {
                             RecipeItemId = 26,
                             ItemId = 74,
-                            ParentItemId = 22,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 22
                         },
                         new
                         {
                             RecipeItemId = 27,
                             ItemId = 75,
-                            ParentItemId = 26,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 26
                         },
                         new
                         {
                             RecipeItemId = 28,
                             ItemId = 59,
-                            ParentItemId = 28,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 28
                         },
                         new
                         {
                             RecipeItemId = 29,
                             ItemId = 52,
-                            ParentItemId = 30,
-                            Quantity = 0.20000000000000001
+                            Quantity = 0.20000000000000001,
+                            RecipeId = 30
                         },
                         new
                         {
                             RecipeItemId = 30,
                             ItemId = 59,
-                            ParentItemId = 32,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 32
                         },
                         new
                         {
                             RecipeItemId = 31,
                             ItemId = 3,
-                            ParentItemId = 32,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 32
                         },
                         new
                         {
                             RecipeItemId = 32,
                             ItemId = 70,
-                            ParentItemId = 33,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 33
                         },
                         new
                         {
                             RecipeItemId = 33,
                             ItemId = 7,
-                            ParentItemId = 33,
-                            Quantity = 3.0
+                            Quantity = 3.0,
+                            RecipeId = 33
                         },
                         new
                         {
                             RecipeItemId = 34,
                             ItemId = 70,
-                            ParentItemId = 34,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 34
                         },
                         new
                         {
                             RecipeItemId = 35,
                             ItemId = 3,
-                            ParentItemId = 34,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 34
                         },
                         new
                         {
                             RecipeItemId = 36,
                             ItemId = 38,
-                            ParentItemId = 36,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 36
                         },
                         new
                         {
                             RecipeItemId = 37,
                             ItemId = 36,
-                            ParentItemId = 37,
-                            Quantity = 0.10000000000000001
+                            Quantity = 0.10000000000000001,
+                            RecipeId = 37
                         },
                         new
                         {
                             RecipeItemId = 38,
                             ItemId = 77,
-                            ParentItemId = 42,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 42
                         },
                         new
                         {
                             RecipeItemId = 39,
                             ItemId = 43,
-                            ParentItemId = 42,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 42
                         },
                         new
                         {
                             RecipeItemId = 40,
                             ItemId = 45,
-                            ParentItemId = 44,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 44
                         },
                         new
                         {
                             RecipeItemId = 41,
                             ItemId = 60,
-                            ParentItemId = 46,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 46
                         },
                         new
                         {
                             RecipeItemId = 42,
                             ItemId = 70,
-                            ParentItemId = 46,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 46
                         },
                         new
                         {
                             RecipeItemId = 43,
                             ItemId = 29,
-                            ParentItemId = 52,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 52
                         },
                         new
                         {
                             RecipeItemId = 44,
                             ItemId = 77,
-                            ParentItemId = 53,
-                            Quantity = 0.20000000000000001
+                            Quantity = 0.20000000000000001,
+                            RecipeId = 53
                         },
                         new
                         {
                             RecipeItemId = 45,
                             ItemId = 24,
-                            ParentItemId = 54,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 54
                         },
                         new
                         {
                             RecipeItemId = 46,
                             ItemId = 8,
-                            ParentItemId = 64,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 64
                         },
                         new
                         {
                             RecipeItemId = 47,
                             ItemId = 38,
-                            ParentItemId = 64,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 64
                         },
                         new
                         {
                             RecipeItemId = 48,
                             ItemId = 64,
-                            ParentItemId = 65,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 65
                         },
                         new
                         {
                             RecipeItemId = 49,
                             ItemId = 65,
-                            ParentItemId = 66,
-                            Quantity = 0.10000000000000001
+                            Quantity = 0.10000000000000001,
+                            RecipeId = 66
                         },
                         new
                         {
                             RecipeItemId = 50,
                             ItemId = 65,
-                            ParentItemId = 67,
-                            Quantity = 0.01
+                            Quantity = 0.01,
+                            RecipeId = 67
                         },
                         new
                         {
                             RecipeItemId = 51,
                             ItemId = 68,
-                            ParentItemId = 74,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 74
                         },
                         new
                         {
                             RecipeItemId = 52,
                             ItemId = 73,
-                            ParentItemId = 72,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 72
                         },
                         new
                         {
                             RecipeItemId = 54,
                             ItemId = 24,
-                            ParentItemId = 80,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 80
                         },
                         new
                         {
                             RecipeItemId = 55,
                             ItemId = 39,
-                            ParentItemId = 80,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 80
                         },
                         new
                         {
                             RecipeItemId = 56,
                             ItemId = 69,
-                            ParentItemId = 80,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 80
                         },
                         new
                         {
                             RecipeItemId = 57,
                             ItemId = 77,
-                            ParentItemId = 80,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 80
                         },
                         new
                         {
                             RecipeItemId = 58,
                             ItemId = 36,
-                            ParentItemId = 81,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 81
                         },
                         new
                         {
                             RecipeItemId = 59,
                             ItemId = 69,
-                            ParentItemId = 81,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 81
                         },
                         new
                         {
                             RecipeItemId = 60,
                             ItemId = 77,
-                            ParentItemId = 81,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 81
                         },
                         new
                         {
                             RecipeItemId = 61,
                             ItemId = 61,
-                            ParentItemId = 82,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 82
                         },
                         new
                         {
                             RecipeItemId = 62,
                             ItemId = 69,
-                            ParentItemId = 82,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 82
                         },
                         new
                         {
                             RecipeItemId = 63,
                             ItemId = 70,
-                            ParentItemId = 82,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 82
                         },
                         new
                         {
                             RecipeItemId = 64,
                             ItemId = 77,
-                            ParentItemId = 82,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 82
                         },
                         new
                         {
                             RecipeItemId = 65,
                             ItemId = 24,
-                            ParentItemId = 83,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 83
                         },
                         new
                         {
                             RecipeItemId = 66,
                             ItemId = 39,
-                            ParentItemId = 83,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 83
                         },
                         new
                         {
                             RecipeItemId = 67,
                             ItemId = 69,
-                            ParentItemId = 83,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 83
                         },
                         new
                         {
                             RecipeItemId = 68,
                             ItemId = 77,
-                            ParentItemId = 83,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 83
                         },
                         new
                         {
                             RecipeItemId = 69,
                             ItemId = 15,
-                            ParentItemId = 84,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 84
                         },
                         new
                         {
                             RecipeItemId = 70,
                             ItemId = 36,
-                            ParentItemId = 84,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 84
                         },
                         new
                         {
                             RecipeItemId = 71,
                             ItemId = 54,
-                            ParentItemId = 84,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 84
                         },
                         new
                         {
                             RecipeItemId = 72,
                             ItemId = 77,
-                            ParentItemId = 84,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 84
                         },
                         new
                         {
                             RecipeItemId = 73,
                             ItemId = 15,
-                            ParentItemId = 85,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 85
                         },
                         new
                         {
                             RecipeItemId = 74,
                             ItemId = 36,
-                            ParentItemId = 85,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 85
                         },
                         new
                         {
                             RecipeItemId = 75,
                             ItemId = 54,
-                            ParentItemId = 85,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 85
                         },
                         new
                         {
                             RecipeItemId = 76,
                             ItemId = 77,
-                            ParentItemId = 85,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 85
                         },
                         new
                         {
                             RecipeItemId = 77,
                             ItemId = 59,
-                            ParentItemId = 86,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 86
                         },
                         new
                         {
                             RecipeItemId = 78,
                             ItemId = 69,
-                            ParentItemId = 86,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 86
                         },
                         new
                         {
                             RecipeItemId = 79,
                             ItemId = 24,
-                            ParentItemId = 87,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 87
                         },
                         new
                         {
                             RecipeItemId = 80,
                             ItemId = 68,
-                            ParentItemId = 87,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 87
                         },
                         new
                         {
                             RecipeItemId = 81,
                             ItemId = 69,
-                            ParentItemId = 87,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 87
                         },
                         new
                         {
                             RecipeItemId = 82,
                             ItemId = 77,
-                            ParentItemId = 87,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 87
                         },
                         new
                         {
                             RecipeItemId = 83,
                             ItemId = 24,
-                            ParentItemId = 88,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 88
                         },
                         new
                         {
                             RecipeItemId = 84,
                             ItemId = 68,
-                            ParentItemId = 88,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 88
                         },
                         new
                         {
                             RecipeItemId = 85,
                             ItemId = 69,
-                            ParentItemId = 88,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 88
                         },
                         new
                         {
                             RecipeItemId = 86,
                             ItemId = 77,
-                            ParentItemId = 88,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 88
                         },
                         new
                         {
                             RecipeItemId = 87,
                             ItemId = 15,
-                            ParentItemId = 89,
-                            Quantity = 120.0
+                            Quantity = 120.0,
+                            RecipeId = 89
                         },
                         new
                         {
                             RecipeItemId = 88,
                             ItemId = 54,
-                            ParentItemId = 89,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 89
                         },
                         new
                         {
                             RecipeItemId = 89,
                             ItemId = 77,
-                            ParentItemId = 89,
-                            Quantity = 80.0
+                            Quantity = 80.0,
+                            RecipeId = 89
                         },
                         new
                         {
                             RecipeItemId = 90,
                             ItemId = 37,
-                            ParentItemId = 90,
-                            Quantity = 120.0
+                            Quantity = 120.0,
+                            RecipeId = 90
                         },
                         new
                         {
                             RecipeItemId = 91,
                             ItemId = 39,
-                            ParentItemId = 90,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 90
                         },
                         new
                         {
                             RecipeItemId = 92,
                             ItemId = 54,
-                            ParentItemId = 90,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 90
                         },
                         new
                         {
                             RecipeItemId = 93,
                             ItemId = 77,
-                            ParentItemId = 90,
-                            Quantity = 80.0
+                            Quantity = 80.0,
+                            RecipeId = 90
                         },
                         new
                         {
                             RecipeItemId = 94,
                             ItemId = 22,
-                            ParentItemId = 91,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 91
                         },
                         new
                         {
                             RecipeItemId = 95,
                             ItemId = 36,
-                            ParentItemId = 91,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 91
                         },
                         new
                         {
                             RecipeItemId = 96,
                             ItemId = 37,
-                            ParentItemId = 91,
-                            Quantity = 120.0
+                            Quantity = 120.0,
+                            RecipeId = 91
                         },
                         new
                         {
                             RecipeItemId = 97,
                             ItemId = 54,
-                            ParentItemId = 91,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 91
                         },
                         new
                         {
                             RecipeItemId = 98,
                             ItemId = 69,
-                            ParentItemId = 91,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 91
                         },
                         new
                         {
                             RecipeItemId = 99,
                             ItemId = 77,
-                            ParentItemId = 91,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 91
                         },
                         new
                         {
                             RecipeItemId = 100,
                             ItemId = 36,
-                            ParentItemId = 92,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 92
                         },
                         new
                         {
                             RecipeItemId = 101,
                             ItemId = 37,
-                            ParentItemId = 92,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 92
                         },
                         new
                         {
                             RecipeItemId = 102,
                             ItemId = 53,
-                            ParentItemId = 92,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 92
                         },
                         new
                         {
                             RecipeItemId = 103,
                             ItemId = 54,
-                            ParentItemId = 92,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 92
                         },
                         new
                         {
                             RecipeItemId = 104,
                             ItemId = 69,
-                            ParentItemId = 92,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 92
                         },
                         new
                         {
                             RecipeItemId = 105,
                             ItemId = 15,
-                            ParentItemId = 93,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 93
                         },
                         new
                         {
                             RecipeItemId = 106,
                             ItemId = 22,
-                            ParentItemId = 93,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 93
                         },
                         new
                         {
                             RecipeItemId = 107,
                             ItemId = 36,
-                            ParentItemId = 93,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 93
                         },
                         new
                         {
                             RecipeItemId = 108,
                             ItemId = 53,
-                            ParentItemId = 93,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 93
                         },
                         new
                         {
                             RecipeItemId = 109,
                             ItemId = 54,
-                            ParentItemId = 93,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 93
                         },
                         new
                         {
                             RecipeItemId = 110,
                             ItemId = 22,
-                            ParentItemId = 94,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 94
                         },
                         new
                         {
                             RecipeItemId = 111,
                             ItemId = 36,
-                            ParentItemId = 94,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 94
                         },
                         new
                         {
                             RecipeItemId = 112,
                             ItemId = 54,
-                            ParentItemId = 94,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 94
                         },
                         new
                         {
                             RecipeItemId = 113,
                             ItemId = 67,
-                            ParentItemId = 94,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 94
                         },
                         new
                         {
                             RecipeItemId = 114,
                             ItemId = 77,
-                            ParentItemId = 94,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 94
                         },
                         new
                         {
                             RecipeItemId = 115,
                             ItemId = 15,
-                            ParentItemId = 95,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 95
                         },
                         new
                         {
                             RecipeItemId = 116,
                             ItemId = 22,
-                            ParentItemId = 95,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 95
                         },
                         new
                         {
                             RecipeItemId = 117,
                             ItemId = 36,
-                            ParentItemId = 95,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 95
                         },
                         new
                         {
                             RecipeItemId = 118,
                             ItemId = 53,
-                            ParentItemId = 95,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 95
                         },
                         new
                         {
                             RecipeItemId = 119,
                             ItemId = 54,
-                            ParentItemId = 95,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 95
                         },
                         new
                         {
                             RecipeItemId = 120,
                             ItemId = 1,
-                            ParentItemId = 96,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 96
                         },
                         new
                         {
                             RecipeItemId = 121,
                             ItemId = 5,
-                            ParentItemId = 96,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 96
                         },
                         new
                         {
                             RecipeItemId = 122,
                             ItemId = 13,
-                            ParentItemId = 96,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 96
                         },
                         new
                         {
                             RecipeItemId = 123,
                             ItemId = 21,
-                            ParentItemId = 96,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 96
                         },
                         new
                         {
                             RecipeItemId = 124,
                             ItemId = 67,
-                            ParentItemId = 96,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 96
                         },
                         new
                         {
                             RecipeItemId = 130,
                             ItemId = 1,
-                            ParentItemId = 97,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 97
                         },
                         new
                         {
                             RecipeItemId = 131,
                             ItemId = 5,
-                            ParentItemId = 97,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 97
                         },
                         new
                         {
                             RecipeItemId = 132,
                             ItemId = 21,
-                            ParentItemId = 97,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 97
                         },
                         new
                         {
                             RecipeItemId = 133,
                             ItemId = 67,
-                            ParentItemId = 97,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 97
                         },
                         new
                         {
                             RecipeItemId = 134,
                             ItemId = 164,
-                            ParentItemId = 97,
-                            Quantity = 3.0
+                            Quantity = 3.0,
+                            RecipeId = 97
                         },
                         new
                         {
                             RecipeItemId = 135,
                             ItemId = 72,
-                            ParentItemId = 164,
-                            Quantity = 3.0
+                            Quantity = 3.0,
+                            RecipeId = 164
                         },
                         new
                         {
                             RecipeItemId = 136,
                             ItemId = 12,
-                            ParentItemId = 98,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 98
                         },
                         new
                         {
                             RecipeItemId = 137,
                             ItemId = 21,
-                            ParentItemId = 98,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 98
                         },
                         new
                         {
                             RecipeItemId = 138,
                             ItemId = 28,
-                            ParentItemId = 98,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 98
                         },
                         new
                         {
                             RecipeItemId = 139,
                             ItemId = 53,
-                            ParentItemId = 98,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 98
                         },
                         new
                         {
                             RecipeItemId = 140,
                             ItemId = 65,
-                            ParentItemId = 98,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 98
                         },
                         new
                         {
                             RecipeItemId = 141,
                             ItemId = 13,
-                            ParentItemId = 99,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 99
                         },
                         new
                         {
                             RecipeItemId = 142,
                             ItemId = 21,
-                            ParentItemId = 99,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 99
                         },
                         new
                         {
                             RecipeItemId = 143,
                             ItemId = 65,
-                            ParentItemId = 99,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 99
                         },
                         new
                         {
                             RecipeItemId = 144,
                             ItemId = 67,
-                            ParentItemId = 99,
-                            Quantity = 18.0
+                            Quantity = 18.0,
+                            RecipeId = 99
                         },
                         new
                         {
                             RecipeItemId = 145,
                             ItemId = 13,
-                            ParentItemId = 100,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 100
                         },
                         new
                         {
                             RecipeItemId = 146,
                             ItemId = 21,
-                            ParentItemId = 100,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 100
                         },
                         new
                         {
                             RecipeItemId = 147,
                             ItemId = 28,
-                            ParentItemId = 100,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 100
                         },
                         new
                         {
                             RecipeItemId = 148,
                             ItemId = 65,
-                            ParentItemId = 100,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 100
                         },
                         new
                         {
                             RecipeItemId = 149,
                             ItemId = 67,
-                            ParentItemId = 100,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 100
                         },
                         new
                         {
                             RecipeItemId = 150,
                             ItemId = 12,
-                            ParentItemId = 101,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 101
                         },
                         new
                         {
                             RecipeItemId = 151,
                             ItemId = 21,
-                            ParentItemId = 101,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 101
                         },
                         new
                         {
                             RecipeItemId = 152,
                             ItemId = 36,
-                            ParentItemId = 101,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 101
                         },
                         new
                         {
                             RecipeItemId = 153,
                             ItemId = 65,
-                            ParentItemId = 101,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 101
                         },
                         new
                         {
                             RecipeItemId = 154,
                             ItemId = 67,
-                            ParentItemId = 101,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 101
                         },
                         new
                         {
                             RecipeItemId = 155,
                             ItemId = 12,
-                            ParentItemId = 102,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 102
                         },
                         new
                         {
                             RecipeItemId = 156,
                             ItemId = 13,
-                            ParentItemId = 102,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 102
                         },
                         new
                         {
                             RecipeItemId = 157,
                             ItemId = 21,
-                            ParentItemId = 102,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 102
                         },
                         new
                         {
                             RecipeItemId = 158,
                             ItemId = 65,
-                            ParentItemId = 102,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 102
                         },
                         new
                         {
                             RecipeItemId = 159,
                             ItemId = 67,
-                            ParentItemId = 102,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 102
                         },
                         new
                         {
                             RecipeItemId = 160,
                             ItemId = 39,
-                            ParentItemId = 103,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 103
                         },
                         new
                         {
                             RecipeItemId = 161,
                             ItemId = 68,
-                            ParentItemId = 103,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 103
                         },
                         new
                         {
                             RecipeItemId = 162,
                             ItemId = 69,
-                            ParentItemId = 103,
-                            Quantity = 80.0
+                            Quantity = 80.0,
+                            RecipeId = 103
                         },
                         new
                         {
                             RecipeItemId = 163,
                             ItemId = 77,
-                            ParentItemId = 103,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 103
                         },
                         new
                         {
                             RecipeItemId = 164,
                             ItemId = 13,
-                            ParentItemId = 104,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 104
                         },
                         new
                         {
                             RecipeItemId = 165,
                             ItemId = 22,
-                            ParentItemId = 104,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 104
                         },
                         new
                         {
                             RecipeItemId = 166,
                             ItemId = 36,
-                            ParentItemId = 104,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 104
                         },
                         new
                         {
                             RecipeItemId = 167,
                             ItemId = 54,
-                            ParentItemId = 104,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 104
                         },
                         new
                         {
                             RecipeItemId = 168,
                             ItemId = 13,
-                            ParentItemId = 105,
-                            Quantity = 80.0
+                            Quantity = 80.0,
+                            RecipeId = 105
                         },
                         new
                         {
                             RecipeItemId = 169,
                             ItemId = 21,
-                            ParentItemId = 105,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 105
                         },
                         new
                         {
                             RecipeItemId = 170,
                             ItemId = 28,
-                            ParentItemId = 105,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 105
                         },
                         new
                         {
                             RecipeItemId = 171,
                             ItemId = 65,
-                            ParentItemId = 105,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 105
                         },
                         new
                         {
                             RecipeItemId = 172,
                             ItemId = 67,
-                            ParentItemId = 105,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 105
                         },
                         new
                         {
                             RecipeItemId = 173,
                             ItemId = 24,
-                            ParentItemId = 107,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 107
                         },
                         new
                         {
                             RecipeItemId = 174,
                             ItemId = 68,
-                            ParentItemId = 107,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 107
                         },
                         new
                         {
                             RecipeItemId = 175,
                             ItemId = 69,
-                            ParentItemId = 107,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 107
                         },
                         new
                         {
                             RecipeItemId = 176,
                             ItemId = 24,
-                            ParentItemId = 108,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 108
                         },
                         new
                         {
                             RecipeItemId = 177,
                             ItemId = 68,
-                            ParentItemId = 108,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 108
                         },
                         new
                         {
                             RecipeItemId = 178,
                             ItemId = 77,
-                            ParentItemId = 108,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 108
                         },
                         new
                         {
                             RecipeItemId = 179,
                             ItemId = 69,
-                            ParentItemId = 109,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 109
                         },
                         new
                         {
                             RecipeItemId = 180,
                             ItemId = 77,
-                            ParentItemId = 109,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 109
                         },
                         new
                         {
                             RecipeItemId = 181,
                             ItemId = 69,
-                            ParentItemId = 110,
-                            Quantity = 120.0
+                            Quantity = 120.0,
+                            RecipeId = 110
                         },
                         new
                         {
                             RecipeItemId = 182,
                             ItemId = 77,
-                            ParentItemId = 110,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 110
                         },
                         new
                         {
                             RecipeItemId = 183,
                             ItemId = 24,
-                            ParentItemId = 111,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 111
                         },
                         new
                         {
                             RecipeItemId = 184,
                             ItemId = 36,
-                            ParentItemId = 111,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 111
                         },
                         new
                         {
                             RecipeItemId = 185,
                             ItemId = 68,
-                            ParentItemId = 111,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 111
                         },
                         new
                         {
                             RecipeItemId = 186,
                             ItemId = 69,
-                            ParentItemId = 111,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 111
                         },
                         new
                         {
                             RecipeItemId = 187,
                             ItemId = 14,
-                            ParentItemId = 112,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 112
                         },
                         new
                         {
                             RecipeItemId = 188,
                             ItemId = 22,
-                            ParentItemId = 112,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 112
                         },
                         new
                         {
                             RecipeItemId = 189,
                             ItemId = 36,
-                            ParentItemId = 112,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 112
                         },
                         new
                         {
                             RecipeItemId = 190,
                             ItemId = 15,
-                            ParentItemId = 113,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 113
                         },
                         new
                         {
                             RecipeItemId = 191,
                             ItemId = 22,
-                            ParentItemId = 113,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 113
                         },
                         new
                         {
                             RecipeItemId = 192,
                             ItemId = 36,
-                            ParentItemId = 113,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 113
                         },
                         new
                         {
                             RecipeItemId = 193,
                             ItemId = 53,
-                            ParentItemId = 113,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 113
                         },
                         new
                         {
                             RecipeItemId = 194,
                             ItemId = 15,
-                            ParentItemId = 114,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 114
                         },
                         new
                         {
                             RecipeItemId = 195,
                             ItemId = 22,
-                            ParentItemId = 114,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 114
                         },
                         new
                         {
                             RecipeItemId = 196,
                             ItemId = 53,
-                            ParentItemId = 114,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 114
                         },
                         new
                         {
                             RecipeItemId = 197,
                             ItemId = 65,
-                            ParentItemId = 114,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 114
                         },
                         new
                         {
                             RecipeItemId = 198,
                             ItemId = 67,
-                            ParentItemId = 114,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 114
                         },
                         new
                         {
                             RecipeItemId = 199,
                             ItemId = 1,
-                            ParentItemId = 115,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 115
                         },
                         new
                         {
                             RecipeItemId = 200,
                             ItemId = 12,
-                            ParentItemId = 115,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 115
                         },
                         new
                         {
                             RecipeItemId = 201,
                             ItemId = 13,
-                            ParentItemId = 115,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 115
                         },
                         new
                         {
                             RecipeItemId = 202,
                             ItemId = 67,
-                            ParentItemId = 115,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 115
                         },
                         new
                         {
                             RecipeItemId = 203,
                             ItemId = 69,
-                            ParentItemId = 115,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 115
                         },
                         new
                         {
                             RecipeItemId = 204,
                             ItemId = 1,
-                            ParentItemId = 116,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 116
                         },
                         new
                         {
                             RecipeItemId = 205,
                             ItemId = 12,
-                            ParentItemId = 116,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 116
                         },
                         new
                         {
                             RecipeItemId = 206,
                             ItemId = 17,
-                            ParentItemId = 116,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 116
                         },
                         new
                         {
                             RecipeItemId = 207,
                             ItemId = 21,
-                            ParentItemId = 116,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 116
                         },
                         new
                         {
                             RecipeItemId = 208,
                             ItemId = 28,
-                            ParentItemId = 116,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 116
                         },
                         new
                         {
                             RecipeItemId = 209,
                             ItemId = 67,
-                            ParentItemId = 116,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 116
                         },
                         new
                         {
                             RecipeItemId = 210,
                             ItemId = 7,
-                            ParentItemId = 118,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 118
                         },
                         new
                         {
                             RecipeItemId = 211,
                             ItemId = 24,
-                            ParentItemId = 118,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 118
                         },
                         new
                         {
                             RecipeItemId = 212,
                             ItemId = 69,
-                            ParentItemId = 118,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 118
                         },
                         new
                         {
                             RecipeItemId = 213,
                             ItemId = 77,
-                            ParentItemId = 118,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 118
                         },
                         new
                         {
                             RecipeItemId = 214,
                             ItemId = 15,
-                            ParentItemId = 119,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 119
                         },
                         new
                         {
                             RecipeItemId = 215,
                             ItemId = 36,
-                            ParentItemId = 119,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 119
                         },
                         new
                         {
                             RecipeItemId = 216,
                             ItemId = 39,
-                            ParentItemId = 119,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 119
                         },
                         new
                         {
                             RecipeItemId = 217,
                             ItemId = 54,
-                            ParentItemId = 119,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 119
                         },
                         new
                         {
                             RecipeItemId = 218,
                             ItemId = 77,
-                            ParentItemId = 119,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 119
                         },
                         new
                         {
                             RecipeItemId = 219,
                             ItemId = 1,
-                            ParentItemId = 120,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 120
                         },
                         new
                         {
                             RecipeItemId = 220,
                             ItemId = 5,
-                            ParentItemId = 120,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 120
                         },
                         new
                         {
                             RecipeItemId = 221,
                             ItemId = 21,
-                            ParentItemId = 120,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 120
                         },
                         new
                         {
                             RecipeItemId = 222,
                             ItemId = 67,
-                            ParentItemId = 120,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 120
                         },
                         new
                         {
                             RecipeItemId = 223,
                             ItemId = 1,
-                            ParentItemId = 121,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 121
                         },
                         new
                         {
                             RecipeItemId = 224,
                             ItemId = 5,
-                            ParentItemId = 121,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 121
                         },
                         new
                         {
                             RecipeItemId = 225,
                             ItemId = 21,
-                            ParentItemId = 121,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 121
                         },
                         new
                         {
                             RecipeItemId = 226,
                             ItemId = 44,
-                            ParentItemId = 121,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 121
                         },
                         new
                         {
                             RecipeItemId = 227,
                             ItemId = 67,
-                            ParentItemId = 121,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 121
                         },
                         new
                         {
                             RecipeItemId = 228,
                             ItemId = 77,
-                            ParentItemId = 122,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 122
                         },
                         new
                         {
                             RecipeItemId = 229,
                             ItemId = 69,
-                            ParentItemId = 123,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 123
                         },
                         new
                         {
                             RecipeItemId = 230,
                             ItemId = 4,
-                            ParentItemId = 124,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 124
                         },
                         new
                         {
                             RecipeItemId = 231,
                             ItemId = 24,
-                            ParentItemId = 124,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 124
                         },
                         new
                         {
                             RecipeItemId = 232,
                             ItemId = 39,
-                            ParentItemId = 124,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 124
                         },
                         new
                         {
                             RecipeItemId = 233,
                             ItemId = 68,
-                            ParentItemId = 124,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 124
                         },
                         new
                         {
                             RecipeItemId = 234,
                             ItemId = 4,
-                            ParentItemId = 125,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 125
                         },
                         new
                         {
                             RecipeItemId = 235,
                             ItemId = 39,
-                            ParentItemId = 125,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 125
                         },
                         new
                         {
                             RecipeItemId = 236,
                             ItemId = 77,
-                            ParentItemId = 125,
-                            Quantity = 18.0
+                            Quantity = 18.0,
+                            RecipeId = 125
                         },
                         new
                         {
                             RecipeItemId = 242,
                             ItemId = 17,
-                            ParentItemId = 126,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 126
                         },
                         new
                         {
                             RecipeItemId = 243,
                             ItemId = 21,
-                            ParentItemId = 126,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 126
                         },
                         new
                         {
                             RecipeItemId = 244,
                             ItemId = 22,
-                            ParentItemId = 126,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 126
                         },
                         new
                         {
                             RecipeItemId = 245,
                             ItemId = 28,
-                            ParentItemId = 126,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 126
                         },
                         new
                         {
                             RecipeItemId = 246,
                             ItemId = 65,
-                            ParentItemId = 126,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 126
                         },
                         new
                         {
                             RecipeItemId = 247,
                             ItemId = 17,
-                            ParentItemId = 127,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 127
                         },
                         new
                         {
                             RecipeItemId = 248,
                             ItemId = 21,
-                            ParentItemId = 127,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 127
                         },
                         new
                         {
                             RecipeItemId = 249,
                             ItemId = 22,
-                            ParentItemId = 127,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 127
                         },
                         new
                         {
                             RecipeItemId = 250,
                             ItemId = 28,
-                            ParentItemId = 127,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 127
                         },
                         new
                         {
                             RecipeItemId = 251,
                             ItemId = 65,
-                            ParentItemId = 127,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 127
                         },
                         new
                         {
                             RecipeItemId = 252,
                             ItemId = 1,
-                            ParentItemId = 128,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 128
                         },
                         new
                         {
                             RecipeItemId = 253,
                             ItemId = 12,
-                            ParentItemId = 128,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 128
                         },
                         new
                         {
                             RecipeItemId = 254,
                             ItemId = 21,
-                            ParentItemId = 128,
-                            Quantity = 35.0
+                            Quantity = 35.0,
+                            RecipeId = 128
                         },
                         new
                         {
                             RecipeItemId = 255,
                             ItemId = 28,
-                            ParentItemId = 128,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 128
                         },
                         new
                         {
                             RecipeItemId = 256,
                             ItemId = 67,
-                            ParentItemId = 128,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 128
                         },
                         new
                         {
                             RecipeItemId = 257,
                             ItemId = 24,
-                            ParentItemId = 129,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 129
                         },
                         new
                         {
                             RecipeItemId = 258,
                             ItemId = 68,
-                            ParentItemId = 129,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 129
                         },
                         new
                         {
                             RecipeItemId = 259,
                             ItemId = 70,
-                            ParentItemId = 129,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 129
                         },
                         new
                         {
                             RecipeItemId = 260,
                             ItemId = 14,
-                            ParentItemId = 130,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 130
                         },
                         new
                         {
                             RecipeItemId = 261,
                             ItemId = 36,
-                            ParentItemId = 130,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 130
                         },
                         new
                         {
                             RecipeItemId = 267,
                             ItemId = 1,
-                            ParentItemId = 165,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 165
                         },
                         new
                         {
                             RecipeItemId = 268,
                             ItemId = 17,
-                            ParentItemId = 165,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 165
                         },
                         new
                         {
                             RecipeItemId = 269,
                             ItemId = 21,
-                            ParentItemId = 165,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 165
                         },
                         new
                         {
                             RecipeItemId = 270,
                             ItemId = 28,
-                            ParentItemId = 165,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 165
                         },
                         new
                         {
                             RecipeItemId = 271,
                             ItemId = 30,
-                            ParentItemId = 165,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 165
                         },
                         new
                         {
                             RecipeItemId = 272,
                             ItemId = 5,
-                            ParentItemId = 143,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 143
                         },
                         new
                         {
                             RecipeItemId = 273,
                             ItemId = 12,
-                            ParentItemId = 143,
-                            Quantity = 18.0
+                            Quantity = 18.0,
+                            RecipeId = 143
                         },
                         new
                         {
                             RecipeItemId = 274,
                             ItemId = 21,
-                            ParentItemId = 143,
-                            Quantity = 30.0
+                            Quantity = 30.0,
+                            RecipeId = 143
                         },
                         new
                         {
                             RecipeItemId = 275,
                             ItemId = 28,
-                            ParentItemId = 143,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 143
                         },
                         new
                         {
                             RecipeItemId = 276,
                             ItemId = 67,
-                            ParentItemId = 143,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 143
                         },
                         new
                         {
                             RecipeItemId = 277,
                             ItemId = 14,
-                            ParentItemId = 166,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 166
                         },
                         new
                         {
                             RecipeItemId = 278,
                             ItemId = 17,
-                            ParentItemId = 166,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 166
                         },
                         new
                         {
                             RecipeItemId = 279,
                             ItemId = 21,
-                            ParentItemId = 166,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 166
                         },
                         new
                         {
                             RecipeItemId = 280,
                             ItemId = 22,
-                            ParentItemId = 166,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 166
                         },
                         new
                         {
                             RecipeItemId = 281,
                             ItemId = 65,
-                            ParentItemId = 166,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 166
                         },
                         new
                         {
                             RecipeItemId = 282,
                             ItemId = 1,
-                            ParentItemId = 167,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 167
                         },
                         new
                         {
                             RecipeItemId = 283,
                             ItemId = 5,
-                            ParentItemId = 167,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 167
                         },
                         new
                         {
                             RecipeItemId = 284,
                             ItemId = 21,
-                            ParentItemId = 167,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 167
                         },
                         new
                         {
                             RecipeItemId = 285,
                             ItemId = 67,
-                            ParentItemId = 167,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 167
                         },
                         new
                         {
                             RecipeItemId = 286,
                             ItemId = 72,
-                            ParentItemId = 167,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 167
                         },
                         new
                         {
                             RecipeItemId = 287,
                             ItemId = 36,
-                            ParentItemId = 131,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 131
                         },
                         new
                         {
                             RecipeItemId = 288,
                             ItemId = 39,
-                            ParentItemId = 131,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 131
                         },
                         new
                         {
                             RecipeItemId = 289,
                             ItemId = 70,
-                            ParentItemId = 131,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 131
                         },
                         new
                         {
                             RecipeItemId = 290,
                             ItemId = 77,
-                            ParentItemId = 131,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 131
                         },
                         new
                         {
                             RecipeItemId = 291,
                             ItemId = 17,
-                            ParentItemId = 132,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 132
                         },
                         new
                         {
                             RecipeItemId = 292,
                             ItemId = 28,
-                            ParentItemId = 132,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 132
                         },
                         new
                         {
                             RecipeItemId = 293,
                             ItemId = 36,
-                            ParentItemId = 132,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 132
                         },
                         new
                         {
                             RecipeItemId = 294,
                             ItemId = 17,
-                            ParentItemId = 133,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 133
                         },
                         new
                         {
                             RecipeItemId = 295,
                             ItemId = 28,
-                            ParentItemId = 133,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 133
                         },
                         new
                         {
                             RecipeItemId = 296,
                             ItemId = 36,
-                            ParentItemId = 133,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 133
                         },
                         new
                         {
                             RecipeItemId = 297,
                             ItemId = 1,
-                            ParentItemId = 134,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 134
                         },
                         new
                         {
                             RecipeItemId = 298,
                             ItemId = 12,
-                            ParentItemId = 134,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 134
                         },
                         new
                         {
                             RecipeItemId = 299,
                             ItemId = 21,
-                            ParentItemId = 134,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 134
                         },
                         new
                         {
                             RecipeItemId = 300,
                             ItemId = 28,
-                            ParentItemId = 134,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 134
                         },
                         new
                         {
                             RecipeItemId = 301,
                             ItemId = 1,
-                            ParentItemId = 135,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 135
                         },
                         new
                         {
                             RecipeItemId = 302,
                             ItemId = 12,
-                            ParentItemId = 135,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 135
                         },
                         new
                         {
                             RecipeItemId = 303,
                             ItemId = 21,
-                            ParentItemId = 135,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 135
                         },
                         new
                         {
                             RecipeItemId = 304,
                             ItemId = 28,
-                            ParentItemId = 135,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 135
                         },
                         new
                         {
                             RecipeItemId = 305,
                             ItemId = 1,
-                            ParentItemId = 136,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 136
                         },
                         new
                         {
                             RecipeItemId = 306,
                             ItemId = 5,
-                            ParentItemId = 136,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 136
                         },
                         new
                         {
                             RecipeItemId = 307,
                             ItemId = 21,
-                            ParentItemId = 136,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 136
                         },
                         new
                         {
                             RecipeItemId = 308,
                             ItemId = 67,
-                            ParentItemId = 136,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 136
                         },
                         new
                         {
                             RecipeItemId = 309,
                             ItemId = 1,
-                            ParentItemId = 137,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 137
                         },
                         new
                         {
                             RecipeItemId = 310,
                             ItemId = 5,
-                            ParentItemId = 137,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 137
                         },
                         new
                         {
                             RecipeItemId = 311,
                             ItemId = 21,
-                            ParentItemId = 137,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 137
                         },
                         new
                         {
                             RecipeItemId = 312,
                             ItemId = 67,
-                            ParentItemId = 137,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 137
                         },
                         new
                         {
                             RecipeItemId = 313,
                             ItemId = 39,
-                            ParentItemId = 138,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 138
                         },
                         new
                         {
                             RecipeItemId = 314,
                             ItemId = 68,
-                            ParentItemId = 138,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 138
                         },
                         new
                         {
                             RecipeItemId = 315,
                             ItemId = 69,
-                            ParentItemId = 138,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 138
                         },
                         new
                         {
                             RecipeItemId = 316,
                             ItemId = 77,
-                            ParentItemId = 138,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 138
                         },
                         new
                         {
                             RecipeItemId = 317,
                             ItemId = 13,
-                            ParentItemId = 139,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 139
                         },
                         new
                         {
                             RecipeItemId = 318,
                             ItemId = 21,
-                            ParentItemId = 139,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 139
                         },
                         new
                         {
                             RecipeItemId = 319,
                             ItemId = 65,
-                            ParentItemId = 139,
-                            Quantity = 24.0
+                            Quantity = 24.0,
+                            RecipeId = 139
                         },
                         new
                         {
                             RecipeItemId = 320,
                             ItemId = 67,
-                            ParentItemId = 139,
-                            Quantity = 16.0
+                            Quantity = 16.0,
+                            RecipeId = 139
                         },
                         new
                         {
                             RecipeItemId = 321,
                             ItemId = 13,
-                            ParentItemId = 140,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 140
                         },
                         new
                         {
                             RecipeItemId = 322,
                             ItemId = 14,
-                            ParentItemId = 140,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 140
                         },
                         new
                         {
                             RecipeItemId = 323,
                             ItemId = 36,
-                            ParentItemId = 140,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 140
                         },
                         new
                         {
                             RecipeItemId = 324,
                             ItemId = 67,
-                            ParentItemId = 140,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 140
                         },
                         new
                         {
                             RecipeItemId = 325,
                             ItemId = 12,
-                            ParentItemId = 141,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 141
                         },
                         new
                         {
                             RecipeItemId = 326,
                             ItemId = 13,
-                            ParentItemId = 141,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 141
                         },
                         new
                         {
                             RecipeItemId = 327,
                             ItemId = 21,
-                            ParentItemId = 141,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 141
                         },
                         new
                         {
                             RecipeItemId = 328,
                             ItemId = 65,
-                            ParentItemId = 141,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 141
                         },
                         new
                         {
                             RecipeItemId = 329,
                             ItemId = 67,
-                            ParentItemId = 141,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 141
                         },
                         new
                         {
                             RecipeItemId = 330,
                             ItemId = 17,
-                            ParentItemId = 142,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 142
                         },
                         new
                         {
                             RecipeItemId = 331,
                             ItemId = 21,
-                            ParentItemId = 142,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 142
                         },
                         new
                         {
                             RecipeItemId = 332,
                             ItemId = 28,
-                            ParentItemId = 142,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 142
                         },
                         new
                         {
                             RecipeItemId = 333,
                             ItemId = 65,
-                            ParentItemId = 142,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 142
                         },
                         new
                         {
                             RecipeItemId = 334,
                             ItemId = 67,
-                            ParentItemId = 142,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 142
                         },
                         new
                         {
                             RecipeItemId = 335,
                             ItemId = 15,
-                            ParentItemId = 144,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 144
                         },
                         new
                         {
                             RecipeItemId = 336,
                             ItemId = 21,
-                            ParentItemId = 144,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 144
                         },
                         new
                         {
                             RecipeItemId = 337,
                             ItemId = 42,
-                            ParentItemId = 144,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 144
                         },
                         new
                         {
                             RecipeItemId = 338,
                             ItemId = 65,
-                            ParentItemId = 144,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 144
                         },
                         new
                         {
                             RecipeItemId = 339,
                             ItemId = 69,
-                            ParentItemId = 144,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 144
                         },
                         new
                         {
                             RecipeItemId = 340,
                             ItemId = 77,
-                            ParentItemId = 144,
-                            Quantity = 100.0
+                            Quantity = 100.0,
+                            RecipeId = 144
                         },
                         new
                         {
                             RecipeItemId = 341,
                             ItemId = 17,
-                            ParentItemId = 147,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 147
                         },
                         new
                         {
                             RecipeItemId = 342,
                             ItemId = 28,
-                            ParentItemId = 147,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 147
                         },
                         new
                         {
                             RecipeItemId = 343,
                             ItemId = 30,
-                            ParentItemId = 147,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 147
                         },
                         new
                         {
                             RecipeItemId = 344,
                             ItemId = 36,
-                            ParentItemId = 147,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 147
                         },
                         new
                         {
                             RecipeItemId = 345,
                             ItemId = 37,
-                            ParentItemId = 147,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 147
                         },
                         new
                         {
                             RecipeItemId = 346,
                             ItemId = 15,
-                            ParentItemId = 148,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 148
                         },
                         new
                         {
                             RecipeItemId = 347,
                             ItemId = 30,
-                            ParentItemId = 148,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 148
                         },
                         new
                         {
                             RecipeItemId = 348,
                             ItemId = 36,
-                            ParentItemId = 148,
-                            Quantity = 15.0
+                            Quantity = 15.0,
+                            RecipeId = 148
                         },
                         new
                         {
                             RecipeItemId = 349,
                             ItemId = 12,
-                            ParentItemId = 149,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 149
                         },
                         new
                         {
                             RecipeItemId = 350,
                             ItemId = 21,
-                            ParentItemId = 149,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 149
                         },
                         new
                         {
                             RecipeItemId = 351,
                             ItemId = 28,
-                            ParentItemId = 149,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 149
                         },
                         new
                         {
                             RecipeItemId = 352,
                             ItemId = 65,
-                            ParentItemId = 149,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 149
                         },
                         new
                         {
                             RecipeItemId = 353,
                             ItemId = 67,
-                            ParentItemId = 149,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 149
                         },
                         new
                         {
                             RecipeItemId = 354,
                             ItemId = 21,
-                            ParentItemId = 150,
-                            Quantity = 5.0
+                            Quantity = 5.0,
+                            RecipeId = 150
                         },
                         new
                         {
                             RecipeItemId = 355,
                             ItemId = 36,
-                            ParentItemId = 150,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 150
                         },
                         new
                         {
                             RecipeItemId = 357,
                             ItemId = 54,
-                            ParentItemId = 151,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 151
                         },
                         new
                         {
                             RecipeItemId = 358,
                             ItemId = 77,
-                            ParentItemId = 151,
-                            Quantity = 60.0
+                            Quantity = 60.0,
+                            RecipeId = 151
                         },
                         new
                         {
                             RecipeItemId = 359,
                             ItemId = 36,
-                            ParentItemId = 152,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 152
                         },
                         new
                         {
                             RecipeItemId = 360,
                             ItemId = 54,
-                            ParentItemId = 152,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 152
                         },
                         new
                         {
                             RecipeItemId = 361,
                             ItemId = 77,
-                            ParentItemId = 152,
-                            Quantity = 40.0
+                            Quantity = 40.0,
+                            RecipeId = 152
                         },
                         new
                         {
                             RecipeItemId = 362,
                             ItemId = 37,
-                            ParentItemId = 153,
-                            Quantity = 18.0
+                            Quantity = 18.0,
+                            RecipeId = 153
                         },
                         new
                         {
                             RecipeItemId = 363,
                             ItemId = 54,
-                            ParentItemId = 153,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 153
                         },
                         new
                         {
                             RecipeItemId = 364,
                             ItemId = 77,
-                            ParentItemId = 153,
-                            Quantity = 50.0
+                            Quantity = 50.0,
+                            RecipeId = 153
                         },
                         new
                         {
                             RecipeItemId = 365,
                             ItemId = 54,
-                            ParentItemId = 154,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 154
                         },
                         new
                         {
                             RecipeItemId = 366,
                             ItemId = 77,
-                            ParentItemId = 154,
-                            Quantity = 80.0
+                            Quantity = 80.0,
+                            RecipeId = 154
                         },
                         new
                         {
                             RecipeItemId = 367,
                             ItemId = 14,
-                            ParentItemId = 155,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 155
                         },
                         new
                         {
                             RecipeItemId = 368,
                             ItemId = 17,
-                            ParentItemId = 156,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 156
                         },
                         new
                         {
                             RecipeItemId = 369,
                             ItemId = 22,
-                            ParentItemId = 156,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 156
                         },
                         new
                         {
                             RecipeItemId = 370,
                             ItemId = 65,
-                            ParentItemId = 156,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 156
                         },
                         new
                         {
                             RecipeItemId = 371,
                             ItemId = 57,
-                            ParentItemId = 157,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 157
                         },
                         new
                         {
                             RecipeItemId = 372,
                             ItemId = 68,
-                            ParentItemId = 157,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 157
                         },
                         new
                         {
                             RecipeItemId = 373,
                             ItemId = 69,
-                            ParentItemId = 157,
-                            Quantity = 4.0
+                            Quantity = 4.0,
+                            RecipeId = 157
                         },
                         new
                         {
                             RecipeItemId = 374,
                             ItemId = 58,
-                            ParentItemId = 158,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 158
                         },
                         new
                         {
                             RecipeItemId = 375,
                             ItemId = 151,
-                            ParentItemId = 158,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 158
                         },
                         new
                         {
                             RecipeItemId = 376,
                             ItemId = 20,
-                            ParentItemId = 159,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 159
                         },
                         new
                         {
                             RecipeItemId = 377,
                             ItemId = 70,
-                            ParentItemId = 159,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 159
                         },
                         new
                         {
                             RecipeItemId = 378,
                             ItemId = 77,
-                            ParentItemId = 159,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 159
                         },
                         new
                         {
                             RecipeItemId = 379,
                             ItemId = 17,
-                            ParentItemId = 160,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 160
                         },
                         new
                         {
                             RecipeItemId = 380,
                             ItemId = 20,
-                            ParentItemId = 160,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 160
                         },
                         new
                         {
                             RecipeItemId = 381,
                             ItemId = 36,
-                            ParentItemId = 160,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 160
                         },
                         new
                         {
                             RecipeItemId = 382,
                             ItemId = 67,
-                            ParentItemId = 160,
-                            Quantity = 8.0
+                            Quantity = 8.0,
+                            RecipeId = 160
                         },
                         new
                         {
                             RecipeItemId = 383,
                             ItemId = 70,
-                            ParentItemId = 160,
-                            Quantity = 12.0
+                            Quantity = 12.0,
+                            RecipeId = 160
                         },
                         new
                         {
                             RecipeItemId = 384,
                             ItemId = 12,
-                            ParentItemId = 161,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 161
                         },
                         new
                         {
                             RecipeItemId = 385,
                             ItemId = 17,
-                            ParentItemId = 161,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 161
                         },
                         new
                         {
                             RecipeItemId = 386,
                             ItemId = 20,
-                            ParentItemId = 161,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 161
                         },
                         new
                         {
                             RecipeItemId = 387,
                             ItemId = 21,
-                            ParentItemId = 161,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 161
                         },
                         new
                         {
                             RecipeItemId = 388,
                             ItemId = 65,
-                            ParentItemId = 161,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 161
                         },
                         new
                         {
                             RecipeItemId = 389,
                             ItemId = 67,
-                            ParentItemId = 161,
-                            Quantity = 25.0
+                            Quantity = 25.0,
+                            RecipeId = 161
                         },
                         new
                         {
                             RecipeItemId = 390,
                             ItemId = 49,
-                            ParentItemId = 168,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 168
                         },
                         new
                         {
                             RecipeItemId = 391,
                             ItemId = 49,
-                            ParentItemId = 162,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 162
                         },
                         new
                         {
                             RecipeItemId = 392,
                             ItemId = 168,
-                            ParentItemId = 162,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 162
                         },
                         new
                         {
                             RecipeItemId = 393,
                             ItemId = 46,
-                            ParentItemId = 163,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 163
                         },
                         new
                         {
                             RecipeItemId = 394,
                             ItemId = 162,
-                            ParentItemId = 163,
-                            Quantity = 1.0
+                            Quantity = 1.0,
+                            RecipeId = 163
                         },
                         new
                         {
                             RecipeItemId = 395,
                             ItemId = 17,
-                            ParentItemId = 146,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 146
                         },
                         new
                         {
                             RecipeItemId = 396,
                             ItemId = 21,
-                            ParentItemId = 146,
-                            Quantity = 6.0
+                            Quantity = 6.0,
+                            RecipeId = 146
                         },
                         new
                         {
                             RecipeItemId = 397,
                             ItemId = 28,
-                            ParentItemId = 146,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 146
                         },
                         new
                         {
                             RecipeItemId = 398,
                             ItemId = 65,
-                            ParentItemId = 146,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 146
                         },
                         new
                         {
                             RecipeItemId = 399,
                             ItemId = 67,
-                            ParentItemId = 146,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 146
                         },
                         new
                         {
                             RecipeItemId = 400,
                             ItemId = 17,
-                            ParentItemId = 169,
-                            Quantity = 70.0
+                            Quantity = 70.0,
+                            RecipeId = 169
                         },
                         new
                         {
                             RecipeItemId = 401,
                             ItemId = 21,
-                            ParentItemId = 169,
-                            Quantity = 20.0
+                            Quantity = 20.0,
+                            RecipeId = 169
                         },
                         new
                         {
                             RecipeItemId = 402,
                             ItemId = 28,
-                            ParentItemId = 169,
-                            Quantity = 10.0
+                            Quantity = 10.0,
+                            RecipeId = 169
                         },
                         new
                         {
                             RecipeItemId = 403,
                             ItemId = 164,
-                            ParentItemId = 169,
-                            Quantity = 2.0
+                            Quantity = 2.0,
+                            RecipeId = 169
                         });
+                });
+
+            modelBuilder.Entity("Icarus_Item_Calculator.Models.Recipe", b =>
+                {
+                    b.HasOne("Icarus_Item_Calculator.Models.Item", "Item")
+                        .WithMany("Recipes")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Icarus_Item_Calculator.Models.RecipeItem", b =>
@@ -3794,23 +3840,28 @@ namespace Icarus_Item_Calculator.Migrations
                     b.HasOne("Icarus_Item_Calculator.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Icarus_Item_Calculator.Models.Item", "ParentItem")
-                        .WithMany("Recipe")
-                        .HasForeignKey("ParentItemId")
+                    b.HasOne("Icarus_Item_Calculator.Models.Recipe", "Recipe")
+                        .WithMany("Ingredients")
+                        .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Item");
 
-                    b.Navigation("ParentItem");
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("Icarus_Item_Calculator.Models.Item", b =>
                 {
-                    b.Navigation("Recipe");
+                    b.Navigation("Recipes");
+                });
+
+            modelBuilder.Entity("Icarus_Item_Calculator.Models.Recipe", b =>
+                {
+                    b.Navigation("Ingredients");
                 });
 #pragma warning restore 612, 618
         }

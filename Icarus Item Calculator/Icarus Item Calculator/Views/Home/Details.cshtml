@@ -1,45 +1,34 @@
-﻿@model Icarus_Item_Calculator.Models.ItemWithStepsViewModel
+﻿<h1>@Model.Item.Name (Quantity: @Model.Quantity)</h1>
 
-@{
-    ViewData["Title"] = "Item Details";
-}
-
-<h1>
-    @Model.Item.Name @if (Model.Quantity != null)
-    {
-        <span>(Quantity: @Model.Quantity)</span>
-    }
-</h1>
-
-<h2>Recipe</h2>
-@if (Model.Item.Recipe == null || !Model.Item.Recipe.Any())
+<h2>Recipes</h2>
+@if (Model.Item.Recipes == null || !Model.Item.Recipes.Any())
 {
-    <p>This is a base item with no recipe.</p>
+    <p>This is a base item with no recipes.</p>
 }
 else
 {
     <ul>
-        @foreach (var recipeItem in Model.Item.Recipe)
+        @foreach (var recipe in Model.Item.Recipes)
         {
-            <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+            <li>
+                Recipe #@recipe.RecipeId:
+                <ul>
+                    @foreach (var recipeItem in recipe.Ingredients)
+                    {
+                        <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+                    }
+                </ul>
+            </li>
         }
     </ul>
 }
-
-<form asp-action="Details" method="post">
-    <div class="form-group">
-        <label for="Quantity">Quantity to Craft:</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="@Model.Quantity" required />
-    </div>
-    <button type="submit" class="btn btn-primary mt-3">Calculate</button>
-</form>
 
 <div class="recipe-container">
     <div class="recipe-steps">
         <h2>Recipe Breakdown</h2>
         @if (Model.RecipeSteps == null || !Model.RecipeSteps.Any())
         {
-            <p>This is a base item with no recipe.</p>
+            <p>This is a base item with no recipe steps.</p>
         }
         else
         {
@@ -73,19 +62,3 @@ else
         </div>
     }
 </div>
-
-<style>
-    .recipe-container {
-        display: flex;
-        gap: 20px; /* Space between columns */
-    }
-
-    .recipe-steps {
-        flex: 2; /* Takes up twice as much space as base-items */
-    }
-
-    .base-items {
-        flex: 1; /* Takes up the remaining space */
-        padding-left: 20px; /* Adds some space between the columns */
-    }
-</style>

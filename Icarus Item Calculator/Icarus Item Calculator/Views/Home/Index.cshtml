@@ -42,18 +42,27 @@
                     <a asp-action="Details" asp-route-id="@item.ItemId">@Html.DisplayFor(modelItem => item.Name)</a>
                 </td>
                 <td>
-                    @if (item.Recipe == null || !item.Recipe.Any())
+                    @if (item.Recipes == null || !item.Recipes.Any())
                     {
                         <span>Base Item</span>
                     }
                     else
                     {
-                        <ul>
-                            @foreach (var recipeItem in item.Recipe)
+                        
+                        @foreach (var recipe in item.Recipes)
+                        {
+                            if (item.Recipes.Count > 1)
                             {
-                                <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+                                <span>Recipe @recipe.RecipeId</span>
                             }
-                        </ul>
+                            <ul>
+                                @foreach(var recipeItem in recipe.Ingredients)
+                                {
+                                    <li>@recipeItem.Item.Name - Quantity: @recipeItem.Quantity</li>
+                                }
+                            </ul>
+                        }
+                        
                     }
                 </td>
                 <td>
