@@ -1,7 +1,8 @@
 ﻿using Icarus_Item_Calculator.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class ItemContext : DbContext
+public class ItemContext : IdentityDbContext
 {
     public ItemContext(DbContextOptions<ItemContext> options) : base(options) { }
 
@@ -11,6 +12,8 @@ public class ItemContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Item>()
             .Property(i => i.ItemId)
             .ValueGeneratedOnAdd();

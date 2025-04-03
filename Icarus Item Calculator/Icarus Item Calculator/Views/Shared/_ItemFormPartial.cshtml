@@ -2,9 +2,10 @@
 
 @{
     var availableItems = ViewData["AvailableItems"] as List<SelectListItem>;
+    var availableRecipes = ViewData["AvailableRecipes"] as List<SelectListItem>;
 }
 
-<form asp-action="@(Model.ItemId == 0 ? "Create" : "Edit")" method="post">
+<form asp-action="@(Model.ItemId == 0 ? "Create" : "Edit")" method="post" id="editForm">
     @if (Model.ItemId != 0)
     {
         <input type="hidden" asp-for="ItemId" />
@@ -14,46 +15,64 @@
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
+    <!-- Recipe Selection Dropdown -->
     <div class="form-group">
-        <label for="Recipe" class="control-label">Recipe Ingredients</label>
+        <label for="selectedRecipe" class="control-label">Select Recipe</label>
+        <select id="selectedRecipe" name="selectedRecipe" class="form-control">
+            @if (Model.ItemId == 0)
+            {
+                <option value="new" selected>Create New Recipe</option>
+            }
+            else
+            {
+                <option value="">-- Select a Recipe --</option>
+                @foreach (var recipe in availableRecipes)
+                {
+                    <option value="@recipe.Value" selected="@(recipe.Value == ViewData["SelectedRecipeId"]?.ToString() ? "selected" : null)">@recipe.Text</option>
+                }
+            }
+        </select>
+    </div>
+
+    <!-- Ingredients Selection -->
+    <div class="form-group">
+        <label for="selectedItems" class="control-label">Recipe Ingredients</label>
         <select id="selectedItems" name="selectedItems" class="form-control" multiple>
             <option value="0">No Recipe</option>
             @foreach (var item in availableItems)
             {
-                var isSelected = Model.ItemId != 0 && Model.Recipes.Any(r => r.Ingredients.Any(ri => ri.ItemId == int.Parse(item.Value)));
-                <option value="@item.Value" selected="@(isSelected ? "selected" : null)">@item.Text</option>
+                <option value="@item.Value">@item.Text</option>
             }
         </select>
     </div>
+
+    <!-- Quantities -->
     <div id="quantitiesContainer" class="form-group">
         <label for="Quantities" class="control-label">Quantities</label>
         @foreach (var item in availableItems)
         {
-            var quantity = Model.ItemId != 0 ? Model.Recipes.FirstOrDefault()?.Ingredients.FirstOrDefault(ri => ri.ItemId == int.Parse(item.Value))?.Quantity ?? 0 : 0;
-            var displayStyle = Model.ItemId != 0 && Model.Recipes.Any(r => r.Ingredients.Any(ri => ri.ItemId == int.Parse(item.Value))) ? "block" : "none";
-            <div class="quantity-input" data-item-id="@item.Value" style="display: @displayStyle">
+            <div class="quantity-input" data-item-id="@item.Value" style="display: none">
                 <label for="quantity_@item.Value" class="control-label">@item.Text</label>
-                <input id="quantity_@item.Value" type="number" name="quantities[@item.Value]" class="form-control" value="@quantity" min="0" step="0.1" />
+                <input id="quantity_@item.Value" type="number" name="quantities[@item.Value]" class="form-control" value="0" min="0" step="0.1" />
             </div>
         }
     </div>
+
     <div class="form-group">
-        <input type="submit" value="@(Model.ItemId == 0 ? "Create" : "Save")" class="btn btn-primary" />
+        <input type="submit" value="@(Model.ItemId == 0 ? "Create" : "Save")" class="btn btn-primary" style="margin: 10px" />
     </div>
 </form>
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $('#selectedItems').change(function () {
-                var selectedIds = $(this).val();
-                $('.quantity-input').hide();
-                if (selectedIds && selectedIds.length > 0 && !selectedIds.includes("0")) {
-                    selectedIds.forEach(function (id) {
-                        $('.quantity-input[data-item-id="' + id + '"]').show();
-                    });
-                }
-            });
-        });
-    </script>
+<!-- Delete Recipe Form (Moved Outside Edit Form) -->
+@if(Model.ItemId != 0)
+{
+    <div class="form-group">
+        <form asp-action="DeleteRecipe" method="post" class="d-inline" id="deleteRecipeForm">
+            <input type="hidden" name="itemId" value="@Model.ItemId" />
+            <input type="hidden" name="recipeId" id="deleteRecipeId" value="" />
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger" id="deleteRecipeButton" disabled style="margin: 10px" >Delete Selected Recipe</button>
+        </form>
+    </div>
 }
