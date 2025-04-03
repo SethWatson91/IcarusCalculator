@@ -1,8 +1,5 @@
 ﻿using Icarus_Item_Calculator.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Icarus_Item_Calculator.Services
 {
@@ -14,45 +11,52 @@ namespace Icarus_Item_Calculator.Services
         {
             _context = context;
         }
-        public async Task LoadNestedRecipesAsync(Item item)
+
+        public async Task LoadNestedRecipesAsync(Recipe recipe)
         {
-            foreach (var recipeItem in item.Recipe)
+            foreach (var recipeItem in recipe.Ingredients)
             {
                 if (recipeItem.Item != null)
                 {
                     await _context.Entry(recipeItem.Item)
-                        .Collection(i => i.Recipe)
+                        .Collection(i => i.Recipes)
                         .Query()
-                        .Include(r => r.Item)
+                        .Include(r => r.Ingredients)
+                        .ThenInclude(ri => ri.Item)
                         .LoadAsync();
 
-                    await LoadNestedRecipesAsync(recipeItem.Item);
+                    foreach (var nestedRecipe in recipeItem.Item.Recipes)
+                    {
+                        await LoadNestedRecipesAsync(nestedRecipe);
+                    }
                 }
             }
         }
-        public (List<RecipeStep>, Dictionary<string, double>) CalculateRecipeSteps(Item item, double quantity)
+
+        public (List<RecipeStep>, Dictionary<string, double>) CalculateRecipeSteps(Recipe recipe, double quantity)
         {
             List<RecipeStep> steps = new List<RecipeStep>();
             Dictionary<string, double> baseItemsTotal = new Dictionary<string, double>();
-            CalculateStepsRecursive(item, quantity, steps, new Dictionary<int, Dictionary<string, double>>(), baseItemsTotal);
+            CalculateStepsRecursive(recipe, quantity, steps, new Dictionary<int, Dictionary<string, double>>(), baseItemsTotal);
             return (steps, baseItemsTotal);
         }
-        private void CalculateStepsRecursive(Item item, double quantity, List<RecipeStep> steps,
+
+        private void CalculateStepsRecursive(Recipe recipe, double quantity, List<RecipeStep> steps,
             Dictionary<int, Dictionary<string, double>> accumulatedIngredients, Dictionary<string, double> baseItemsTotal)
         {
-            if (item == null) return;
+            if (recipe == null || recipe.Item == null) return;
 
-            accumulatedIngredients[item.ItemId] = new Dictionary<string, double>();
+            accumulatedIngredients[recipe.RecipeId] = new Dictionary<string, double>();
 
             steps.Add(new RecipeStep
             {
-                ItemName = item.Name,
+                ItemName = recipe.Item.Name,
                 Quantity = quantity,
-                Ingredients = item.Recipe.Select(r =>
+                Ingredients = recipe.Ingredients.Select(r =>
                 {
                     double totalQuantity = r.Quantity * quantity;
 
-                    accumulatedIngredients[item.ItemId][r.Item.Name] = totalQuantity;
+                    accumulatedIngredients[recipe.RecipeId][r.Item.Name] = totalQuantity;
 
                     if (r.Item.IsBaseItem)
                     {
@@ -69,15 +73,19 @@ namespace Icarus_Item_Calculator.Services
                     return new IngredientStep
                     {
                         ItemName = r.Item.Name,
-                        Quantity = accumulatedIngredients[item.ItemId][r.Item.Name],
+                        Quantity = totalQuantity,
                         IsBase = r.Item.IsBaseItem
                     };
                 }).ToList()
             });
 
-            foreach (var recipeItem in item.Recipe.Where(r => !r.Item.IsBaseItem))
+            foreach (var recipeItem in recipe.Ingredients.Where(r => !r.Item.IsBaseItem))
             {
-                CalculateStepsRecursive(recipeItem.Item, recipeItem.Quantity * quantity, steps, accumulatedIngredients, baseItemsTotal);
+                var firstRecipe = recipeItem.Item.Recipes.FirstOrDefault(); // Use the first recipe for simplicity
+                if (firstRecipe != null)
+                {
+                    CalculateStepsRecursive(firstRecipe, recipeItem.Quantity * quantity, steps, accumulatedIngredients, baseItemsTotal);
+                }
             }
         }
     }

@@ -9,13 +9,14 @@ namespace Icarus_Item_Calculator.Models
 
         [Required]
         public int ItemId { get; set; }
-        public Item Item { get; set; }
+        public Item? Item { get; set; }
 
         [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]
         public double Quantity { get; set; }
 
         [Required]
-        public int ParentItemId { get; set; }
-        public Item ParentItem { get; set; }
+        public int RecipeId { get; set; }
+        public Recipe? Recipe { get; set; }
     }
 }
