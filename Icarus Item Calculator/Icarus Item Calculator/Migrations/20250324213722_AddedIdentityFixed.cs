@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,11 +8,50 @@
 namespace Icarus_Item_Calculator.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateToMultipleRecipes : Migration
+    public partial class AddedIdentityFixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
@@ -24,6 +64,112 @@ namespace Icarus_Item_Calculator.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.ItemId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,140 +394,143 @@ namespace Icarus_Item_Calculator.Migrations
                     { 169, false, "Electrolytic Oxygen Synthesizer" }
                 });
 
-
-            migrationBuilder.Sql(@"
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RecipeId', N'ItemId') AND [object_id] = OBJECT_ID(N'[Recipes]'))
-        SET IDENTITY_INSERT [Recipes] ON;
-
-    INSERT INTO [Recipes] ([RecipeId], [ItemId]) VALUES
-    (5, 5),
-    (6, 6),
-    (11, 11),
-    (12, 12),
-    (13, 13),
-    (14, 14),
-    (15, 15),
-    (17, 17),
-    (19, 19),
-    (21, 21),
-    (22, 22),
-    (26, 26),
-    (28, 28),
-    (30, 30),
-    (32, 32),
-    (33, 33),
-    (34, 34),
-    (36, 36),
-    (37, 37),
-    (42, 42),
-    (44, 44),
-    (46, 46),
-    (52, 52),
-    (53, 53),
-    (54, 54),
-    (64, 64),
-    (65, 65),
-    (66, 66),
-    (67, 67),
-    (72, 72),
-    (74, 74),
-    (80, 80),
-    (81, 81),
-    (82, 82),
-    (83, 83),
-    (84, 84),
-    (85, 85),
-    (86, 86),
-    (87, 87),
-    (88, 88),
-    (89, 89),
-    (90, 90),
-    (91, 91),
-    (92, 92),
-    (93, 93),
-    (94, 94),
-    (95, 95),
-    (96, 96),
-    (97, 97),
-    (98, 98),
-    (99, 99),
-    (100, 100),
-    (101, 101),
-    (102, 102),
-    (103, 103),
-    (104, 104),
-    (105, 105),
-    (107, 107),
-    (108, 108),
-    (109, 109),
-    (110, 110),
-    (111, 111),
-    (112, 112),
-    (113, 113),
-    (114, 114),
-    (115, 115),
-    (116, 116),
-    (118, 118),
-    (119, 119),
-    (120, 120),
-    (121, 121),
-    (122, 122),
-    (123, 123),
-    (124, 124),
-    (125, 125),
-    (126, 126),
-    (127, 127),
-    (128, 128),
-    (129, 129),
-    (130, 130),
-    (131, 131),
-    (132, 132),
-    (133, 133),
-    (134, 134),
-    (135, 135),
-    (136, 136),
-    (137, 137),
-    (138, 138),
-    (139, 139),
-    (140, 140),
-    (141, 141),
-    (142, 142),
-    (143, 143),
-    (144, 144),
-    (146, 146),
-    (147, 147),
-    (148, 148),
-    (149, 149),
-    (150, 150),
-    (151, 151),
-    (152, 152),
-    (153, 153),
-    (154, 154),
-    (155, 155),
-    (156, 156),
-    (157, 157),
-    (158, 158),
-    (159, 159),
-    (160, 160),
-    (161, 161),
-    (162, 162),
-    (163, 163),
-    (164, 164),
-    (165, 165),
-    (166, 166),
-    (167, 167),
-    (168, 168),
-    (169, 169);
-
-    IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RecipeId', N'ItemId') AND [object_id] = OBJECT_ID(N'[Recipes]'))
-        SET IDENTITY_INSERT [Recipes] OFF;
-");
+            migrationBuilder.InsertData(
+                table: "Recipes",
+                columns: new[] { "RecipeId", "ItemId" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 3 },
+                    { 3, 3 },
+                    { 4, 4 },
+                    { 5, 5 },
+                    { 6, 6 },
+                    { 11, 11 },
+                    { 12, 12 },
+                    { 13, 13 },
+                    { 14, 14 },
+                    { 15, 15 },
+                    { 17, 17 },
+                    { 19, 19 },
+                    { 21, 21 },
+                    { 22, 22 },
+                    { 26, 26 },
+                    { 28, 28 },
+                    { 30, 30 },
+                    { 32, 32 },
+                    { 33, 33 },
+                    { 34, 34 },
+                    { 36, 36 },
+                    { 37, 37 },
+                    { 42, 42 },
+                    { 44, 44 },
+                    { 46, 46 },
+                    { 52, 52 },
+                    { 53, 53 },
+                    { 54, 54 },
+                    { 64, 64 },
+                    { 65, 65 },
+                    { 66, 66 },
+                    { 67, 67 },
+                    { 72, 72 },
+                    { 74, 74 },
+                    { 80, 80 },
+                    { 81, 81 },
+                    { 82, 82 },
+                    { 83, 83 },
+                    { 84, 84 },
+                    { 85, 85 },
+                    { 86, 86 },
+                    { 87, 87 },
+                    { 88, 88 },
+                    { 89, 89 },
+                    { 90, 90 },
+                    { 91, 91 },
+                    { 92, 92 },
+                    { 93, 93 },
+                    { 94, 94 },
+                    { 95, 95 },
+                    { 96, 96 },
+                    { 97, 97 },
+                    { 98, 98 },
+                    { 99, 99 },
+                    { 100, 100 },
+                    { 101, 101 },
+                    { 102, 102 },
+                    { 103, 103 },
+                    { 104, 104 },
+                    { 105, 105 },
+                    { 107, 107 },
+                    { 108, 108 },
+                    { 109, 109 },
+                    { 110, 110 },
+                    { 111, 111 },
+                    { 112, 112 },
+                    { 113, 113 },
+                    { 114, 114 },
+                    { 115, 115 },
+                    { 116, 116 },
+                    { 118, 118 },
+                    { 119, 119 },
+                    { 120, 120 },
+                    { 121, 121 },
+                    { 122, 122 },
+                    { 123, 123 },
+                    { 124, 124 },
+                    { 125, 125 },
+                    { 126, 126 },
+                    { 127, 127 },
+                    { 128, 128 },
+                    { 129, 129 },
+                    { 130, 130 },
+                    { 131, 131 },
+                    { 132, 132 },
+                    { 133, 133 },
+                    { 134, 134 },
+                    { 135, 135 },
+                    { 136, 136 },
+                    { 137, 137 },
+                    { 138, 138 },
+                    { 139, 139 },
+                    { 140, 140 },
+                    { 141, 141 },
+                    { 142, 142 },
+                    { 143, 143 },
+                    { 144, 144 },
+                    { 146, 146 },
+                    { 147, 147 },
+                    { 148, 148 },
+                    { 149, 149 },
+                    { 150, 150 },
+                    { 151, 151 },
+                    { 152, 152 },
+                    { 153, 153 },
+                    { 154, 154 },
+                    { 155, 155 },
+                    { 156, 156 },
+                    { 157, 157 },
+                    { 158, 158 },
+                    { 159, 159 },
+                    { 160, 160 },
+                    { 161, 161 },
+                    { 162, 162 },
+                    { 163, 163 },
+                    { 164, 164 },
+                    { 165, 165 },
+                    { 166, 166 },
+                    { 167, 167 },
+                    { 168, 168 },
+                    { 169, 169 }
+                });
 
             migrationBuilder.InsertData(
                 table: "RecipeItems",
                 columns: new[] { "RecipeItemId", "ItemId", "Quantity", "RecipeId" },
                 values: new object[,]
                 {
+                    { 1, 2, 1.0, 1 },
+                    { 2, 61, 10.0, 3 },
+                    { 3, 20, 10.0, 3 },
                     { 4, 6, 1.0, 5 },
                     { 5, 59, 1.0, 6 },
                     { 6, 1, 1.0, 6 },
@@ -767,158 +916,44 @@ namespace Icarus_Item_Calculator.Migrations
                     { 403, 164, 2.0, 169 }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Recipes",
-                columns: new[] { "RecipeId", "ItemId" },
-                values: new object[,]
-                {
-                    { 1, 1 },
-                    { 2, 3 },
-                    { 3, 3 },
-                    { 4, 4 },
-                    //{ 5, 5 },
-                    //{ 6, 6 },
-                    //{ 7, 7 },
-                    //{ 8, 8 },
-                    //{ 9, 9 },
-                    //{ 10, 10 },
-                    //{ 11, 11 },
-                    //{ 12, 12 },
-                    //{ 13, 13 },
-                    //{ 14, 14 },
-                    //{ 15, 15 },
-                    //{ 16, 16 },
-                    //{ 17, 17 },
-                    //{ 18, 18 },
-                    //{ 19, 19 },
-                    //{ 20, 20 },
-                    //{ 21, 21 },
-                    //{ 22, 22 },
-                    //{ 23, 23 },
-                    //{ 24, 24 },
-                    //{ 25, 25 },
-                    //{ 26, 26 },
-                    //{ 27, 27 },
-                    //{ 28, 28 },
-                    //{ 29, 29 },
-                    //{ 30, 30 },
-                    //{ 31, 31 },
-                    //{ 32, 32 },
-                    //{ 33, 33 },
-                    //{ 34, 34 },
-                    //{ 36, 36 },
-                    //{ 37, 37 },
-                    //{ 42, 42 },
-                    //{ 44, 44 },
-                    //{ 46, 46 },
-                    //{ 52, 52 },
-                    //{ 53, 53 },
-                    //{ 54, 54 },
-                    //{ 64, 64 },
-                    //{ 65, 65 },
-                    //{ 66, 66 },
-                    //{ 67, 67 },
-                    //{ 72, 72 },
-                    //{ 74, 74 },
-                    //{ 80, 80 },
-                    //{ 81, 81 },
-                    //{ 82, 82 },
-                    //{ 83, 83 },
-                    //{ 84, 84 },
-                    //{ 85, 85 },
-                    //{ 86, 86 },
-                    //{ 87, 87 },
-                    //{ 88, 88 },
-                    //{ 89, 89 },
-                    //{ 90, 90 },
-                    //{ 91, 91 },
-                    //{ 92, 92 },
-                    //{ 93, 93 },
-                    //{ 94, 94 },
-                    //{ 95, 95 },
-                    //{ 96, 96 },
-                    //{ 97, 97 },
-                    //{ 98, 98 },
-                    //{ 99, 99 },
-                    //{ 100, 100 },
-                    //{ 101, 101 },
-                    //{ 102, 102 },
-                    //{ 103, 103 },
-                    //{ 104, 104 },
-                    //{ 105, 105 },
-                    //{ 107, 107 },
-                    //{ 108, 108 },
-                    //{ 109, 109 },
-                    //{ 110, 110 },
-                    //{ 111, 111 },
-                    //{ 112, 112 },
-                    //{ 113, 113 },
-                    //{ 114, 114 },
-                    //{ 115, 115 },
-                    //{ 116, 116 },
-                    //{ 118, 118 },
-                    //{ 119, 119 },
-                    //{ 120, 120 },
-                    //{ 121, 121 },
-                    //{ 122, 122 },
-                    //{ 123, 123 },
-                    //{ 124, 124 },
-                    //{ 125, 125 },
-                    //{ 126, 126 },
-                    //{ 127, 127 },
-                    //{ 128, 128 },
-                    //{ 129, 129 },
-                    //{ 130, 130 },
-                    //{ 131, 131 },
-                    //{ 132, 132 },
-                    //{ 133, 133 },
-                    //{ 134, 134 },
-                    //{ 135, 135 },
-                    //{ 136, 136 },
-                    //{ 137, 137 },
-                    //{ 138, 138 },
-                    //{ 139, 139 },
-                    //{ 140, 140 },
-                    //{ 141, 141 },
-                    //{ 142, 142 },
-                    //{ 143, 143 },
-                    //{ 144, 144 },
-                    //{ 146, 146 },
-                    //{ 147, 147 },
-                    //{ 148, 148 },
-                    //{ 149, 149 },
-                    //{ 150, 150 },
-                    //{ 151, 151 },
-                    //{ 152, 152 },
-                    //{ 153, 153 },
-                    //{ 154, 154 },
-                    //{ 155, 155 },
-                    //{ 156, 156 },
-                    //{ 157, 157 },
-                    //{ 158, 158 },
-                    //{ 159, 159 },
-                    //{ 160, 160 },
-                    //{ 161, 161 },
-                    //{ 162, 162 },
-                    //{ 163, 163 },
-                    //{ 164, 164 },
-                    //{ 165, 165 },
-                    //{ 166, 166 },
-                    //{ 167, 167 },
-                    //{ 168, 168 },
-                    //{ 169, 169 }
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
 
-        });
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
-            migrationBuilder.InsertData(
-                table: "RecipeItems",
-                columns: new[] { "RecipeItemId", "ItemId", "Quantity", "RecipeId" },
-                values: new object[,]
-                {
-                    { 1, 2, 1.0, 1 },
-                    { 2, 61, 10.0, 3 },
-                    { 3, 20, 10.0, 3 }
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeItems_ItemId",
@@ -940,7 +975,28 @@ namespace Icarus_Item_Calculator.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
                 name: "RecipeItems");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Recipes");

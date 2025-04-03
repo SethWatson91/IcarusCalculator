@@ -1,0 +1,48 @@
+﻿@page
+@model Icarus_Item_Calculator.Areas.Identity.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="text-success">@Model.Message</p>
+<p class="text-danger">@Model.Error</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@string.Join(", ", await Model.GetUserRolesAsync(user))</td>
+                <td>
+                    @if (User.Identity.Name != user.UserName) 
+                    {
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@user.Id">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete @user.Email?');">Delete</button>
+                        </form>
+                    }
+                    <form method="post" asp-page-handler="AddRole" asp-route-id="@user.Id" style="display:inline;">
+                        <input type="text" name="roleName" placeholder="Add role" class="form-control form-control-sm d-inline" style="width:auto;" />
+                        <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    </form>
+                    @foreach (var role in await Model.GetUserRolesAsync(user))
+                    {
+                        <form method="post" asp-page-handler="RemoveRole" asp-route-id="@user.Id" style="display:inline;">
+                            <input type="hidden" name="roleName" value="@role" />
+                            <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Remove @role from @user.Email?');">Remove @role</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
