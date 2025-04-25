@@ -7,26 +7,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Icarus_Item_Calculator.Areas.Identity.Pages.Admin
 {
     [Authorize(Roles = "Admin")] // Restrict to Admin role
-    public class UsersModel : PageModel
+    public class UsersModel(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<IdentityUser> _userManager = userManager;
+        private readonly RoleManager<IdentityRole> _roleManager = roleManager;
 
-        public UsersModel(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
-        {
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
-
-        public IList<IdentityUser> Users { get; set; }
+        public required IList<IdentityUser> Users { get; set; }
         [TempData]
-        public string Message { get; set; }
+        public string? Message { get; set; }
         [TempData]
-        public string Error { get; set; }
+        public string? Error { get; set; }
 
-        public async Task OnGetAsync()
+        public Task OnGetAsync()
         {
-            Users = _userManager.Users.ToList();
+            Users = [.. _userManager.Users];
+            return Task.CompletedTask;
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(string id)

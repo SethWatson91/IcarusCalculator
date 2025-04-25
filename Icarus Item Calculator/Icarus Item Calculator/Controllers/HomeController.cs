@@ -7,17 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Icarus_Item_Calculator.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ItemContext context, ItemServices itemServices) : Controller
     {
-        private readonly ItemContext _context;
-        private readonly ItemServices _itemServices;
-
-
-        public HomeController(ItemContext context, ItemServices itemServices)
-        {
-            _context = context;
-            _itemServices = itemServices;
-        }
+        private readonly ItemContext _context = context;
+        private readonly ItemServices _itemServices = itemServices;
 
 
         // GET: Home/Index
@@ -40,22 +33,13 @@ namespace Icarus_Item_Calculator.Controllers
                 items = items.Where(s => s.Name.Contains(searchString));
             }
 
-            switch (sortOrder)
+            items = sortOrder switch
             {
-                case "name_desc":
-                    items = items.OrderByDescending(i => i.Name);
-                    break;
-                case "Id":
-                    items = items.OrderBy(i => i.ItemId);
-                    break;
-                case "id_desc":
-                    items = items.OrderByDescending(i => i.ItemId);
-                    break;
-                default:
-                    items = items.OrderBy(i => i.Name);
-                    break;
-            }
-
+                "name_desc" => items.OrderByDescending(i => i.Name),
+                "Id" => items.OrderBy(i => i.ItemId),
+                "id_desc" => items.OrderByDescending(i => i.ItemId),
+                _ => items.OrderBy(i => i.Name),
+            };
             return View(await items.AsNoTracking().ToListAsync());
         }
 
@@ -76,7 +60,7 @@ namespace Icarus_Item_Calculator.Controllers
             // Set up AvailableRecipes with only "Create New Recipe" for a new item
             ViewData["AvailableRecipes"] = new List<SelectListItem>
     {
-        new SelectListItem
+        new()
         {
             Value = "new",
             Text = "Create New Recipe"
@@ -99,10 +83,10 @@ namespace Icarus_Item_Calculator.Controllers
                 {
                     Name = item.Name,
                     IsBaseItem = item.IsBaseItem,
-                    Recipes = new List<Recipe>()
+                    Recipes = []
                 };
 
-                if (selectedRecipe == "new" && selectedItems != null && selectedItems.Any() && !selectedItems.Contains(0))
+                if (selectedRecipe == "new" && selectedItems != null && selectedItems.Length != 0 && !selectedItems.Contains(0))
                 {
                     var recipe = new Recipe { Item = newItem };
                     newItem.Recipes.Add(recipe);
@@ -137,7 +121,7 @@ namespace Icarus_Item_Calculator.Controllers
                 .ToList();
             ViewData["AvailableRecipes"] = new List<SelectListItem>
             {
-                new SelectListItem
+                new()
                 {
                     Value = "new",
                     Text = "Create New Recipe"
@@ -242,7 +226,7 @@ namespace Icarus_Item_Calculator.Controllers
 
                     // Clear and update ingredients
                     recipe.Ingredients.Clear();
-                    if (selectedItems != null && selectedItems.Any() && !selectedItems.Contains(0))
+                    if (selectedItems != null && selectedItems.Length != 0 && !selectedItems.Contains(0))
                     {
                         foreach (var itemId in selectedItems)
                         {
@@ -293,7 +277,7 @@ namespace Icarus_Item_Calculator.Controllers
                     Value = r.RecipeId.ToString(),
                     Text = $"Recipe #{r.RecipeId}"
                 })
-                .ToList() ?? new List<SelectListItem>();
+                .ToList() ?? [];
             availableRecipes.Add(new SelectListItem
             {
                 Value = "new",
@@ -404,7 +388,7 @@ namespace Icarus_Item_Calculator.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
                 // Check if the item is used as an ingredient in any RecipeItem
                 if (_context.RecipeItems.Any(ri => ri.ItemId == id))
@@ -439,7 +423,7 @@ namespace Icarus_Item_Calculator.Controllers
             var model = new ItemWithStepsViewModel
             {
                 Item = item,
-                RecipeSteps = new List<RecipeStep>(),
+                RecipeSteps = [],
                 Quantity = 1,
                 AvailableRecipes = item.Recipes.Select(r => new SelectListItem
                 {
@@ -449,7 +433,7 @@ namespace Icarus_Item_Calculator.Controllers
             };
 
             // Optionally pre-select the first recipe and calculate its steps
-            if (item.Recipes.Any())
+            if (item.Recipes.Count != 0)
             {
                 model.SelectedRecipeId = item.Recipes.First().RecipeId;
                 var recipe = item.Recipes.First();
@@ -481,7 +465,7 @@ namespace Icarus_Item_Calculator.Controllers
             var model = new ItemWithStepsViewModel
             {
                 Item = item,
-                RecipeSteps = new List<RecipeStep>(),
+                RecipeSteps = [],
                 Quantity = quantity,
                 AvailableRecipes = item.Recipes.Select(r => new SelectListItem
                 {

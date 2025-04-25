@@ -3,14 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Icarus_Item_Calculator.Services
 {
-    public class ItemServices
+    public class ItemServices(ItemContext context)
     {
-        private readonly ItemContext _context;
-
-        public ItemServices(ItemContext context)
-        {
-            _context = context;
-        }
+        private readonly ItemContext _context = context;
 
         public async Task LoadNestedRecipesAsync(Recipe recipe)
         {
@@ -35,18 +30,18 @@ namespace Icarus_Item_Calculator.Services
 
         public (List<RecipeStep>, Dictionary<string, double>) CalculateRecipeSteps(Recipe recipe, double quantity)
         {
-            List<RecipeStep> steps = new List<RecipeStep>();
-            Dictionary<string, double> baseItemsTotal = new Dictionary<string, double>();
-            CalculateStepsRecursive(recipe, quantity, steps, new Dictionary<int, Dictionary<string, double>>(), baseItemsTotal);
+            List<RecipeStep> steps = [];
+            Dictionary<string, double> baseItemsTotal = [];
+            CalculateStepsRecursive(recipe, quantity, steps, [], baseItemsTotal);
             return (steps, baseItemsTotal);
         }
 
-        private void CalculateStepsRecursive(Recipe recipe, double quantity, List<RecipeStep> steps,
+        private static void CalculateStepsRecursive(Recipe recipe, double quantity, List<RecipeStep> steps,
             Dictionary<int, Dictionary<string, double>> accumulatedIngredients, Dictionary<string, double> baseItemsTotal)
         {
             if (recipe == null || recipe.Item == null) return;
 
-            accumulatedIngredients[recipe.RecipeId] = new Dictionary<string, double>();
+            accumulatedIngredients[recipe.RecipeId] = [];
 
             steps.Add(new RecipeStep
             {
