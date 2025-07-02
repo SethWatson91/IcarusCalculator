@@ -47,18 +47,4 @@ A web-based tool built with ASP.NET Core MVC that analyzes and resolves nested c
 
 ## 🎮 Background
 
-The survival game *Icarus* features a deep and multi-tiered crafting system. This project started as a passion tool to help players understand how many raw resources (like wood, ore, etc.) are needed to craft high-tier items like a Radar or Orbital Workbench. It evolved into a recursive dependency solver with reusable architecture.
-
----
-
-## 📁 Project Structure
-
-```text
-├── Controllers/
-├── Models/
-├── ViewModels/
-├── Views/
-├── Data/
-├── appsettings.json
-└── Program.cs
-```
+The survival game *Icarus* features a deep and multi-tiered crafting system. This project started as a passion tool to help players understand how many raw resources (like wood, ore, etc.) are needed to craft high-tier items like the Fabricator. It evolved into a recursive dependency solver with reusable architecture.
