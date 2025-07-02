@@ -2,8 +2,6 @@
 
 A web-based tool built with ASP.NET Core MVC that analyzes and resolves nested crafting dependencies from the survival game **Icarus**. This app allows players to calculate total base resources required to craft complex items by tracing recursive recipes across multiple tiers.
 
-![screenshot-placeholder](https://via.placeholder.com/800x400?text=Icarus+Calculator+UI)
-
 ---
 
 ## 🔧 Tech Stack
@@ -36,10 +34,31 @@ A web-based tool built with ASP.NET Core MVC that analyzes and resolves nested c
 
 ### Running the Project
 
-1. Clone the repository:
+1. **Clone the repository:**
 
-```bash
-git clone https://github.com/SethWatson91/IcarusCalculator.git
-cd IcarusCalculator
-dotnet ef database update
-dotnet run
+    ```bash
+    git clone https://github.com/yourusername/icarus-crafting-analyzer.git
+    cd icarus-crafting-analyzer
+    dotnet ef database update
+    dotnet run
+    ```
+
+---
+
+## 🎮 Background
+
+The survival game *Icarus* features a deep and multi-tiered crafting system. This project started as a passion tool to help players understand how many raw resources (like wood, ore, etc.) are needed to craft high-tier items like a Radar or Orbital Workbench. It evolved into a recursive dependency solver with reusable architecture.
+
+---
+
+## 📁 Project Structure
+
+```text
+├── Controllers/
+├── Models/
+├── ViewModels/
+├── Views/
+├── Data/
+├── appsettings.json
+└── Program.cs
+```
