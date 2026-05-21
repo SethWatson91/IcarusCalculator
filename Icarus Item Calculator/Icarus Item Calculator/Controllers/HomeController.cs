@@ -82,11 +82,13 @@ namespace Icarus_Item_Calculator.Controllers
                 var newItem = new Item
                 {
                     Name = item.Name,
-                    IsBaseItem = item.IsBaseItem,
                     Recipes = []
                 };
 
-                if (selectedRecipe == "new" && selectedItems != null && selectedItems.Length != 0 && !selectedItems.Contains(0))
+                bool isBaseItem = selectedItems != null && selectedItems.Contains(0);
+                newItem.IsBaseItem = isBaseItem;
+
+                if (!isBaseItem && selectedRecipe == "new" && selectedItems != null && selectedItems.Length != 0)
                 {
                     var recipe = new Recipe { Item = newItem };
                     newItem.Recipes.Add(recipe);
@@ -206,41 +208,51 @@ namespace Icarus_Item_Calculator.Controllers
                     }
 
                     existingItem.Name = item.Name;
-                    existingItem.IsBaseItem = item.IsBaseItem;
+                    bool isBaseItem = selectedItems != null && selectedItems.Contains(0);
+                    existingItem.IsBaseItem = isBaseItem;
 
-                    Recipe recipe;
-                    if (selectedRecipe == "new")
+                    if (!isBaseItem)
                     {
-                        recipe = new Recipe { ItemId = existingItem.ItemId };
-                        existingItem.Recipes.Add(recipe);
+                        Recipe recipe;
+                        if (selectedRecipe == "new")
+                        {
+                            recipe = new Recipe { ItemId = existingItem.ItemId };
+                            existingItem.Recipes.Add(recipe);
+                        }
+                        else
+                        {
+                            int recipeId = int.Parse(selectedRecipe);
+                            recipe = existingItem.Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
+                            if (recipe == null)
+                            {
+                                return NotFound();
+                            }
+                        }
+
+                        // Clear and update ingredients
+
+                        recipe.Ingredients.Clear();
+                        if (selectedItems != null && selectedItems.Length != 0)
+                        {
+                            foreach (var itemId in selectedItems)
+                            {
+                                var ingredient = await _context.Items.FindAsync(itemId);
+                                if (ingredient != null && quantities.TryGetValue(itemId, out double quantity))
+                                {
+                                    recipe.Ingredients.Add(new RecipeItem
+                                    {
+                                        ItemId = itemId,
+                                        Quantity = quantity,
+                                        RecipeId = recipe.RecipeId
+                                    });
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        int recipeId = int.Parse(selectedRecipe);
-                        recipe = existingItem.Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
-                        if (recipe == null)
-                        {
-                            return NotFound();
-                        }
-                    }
-
-                    // Clear and update ingredients
-                    recipe.Ingredients.Clear();
-                    if (selectedItems != null && selectedItems.Length != 0 && !selectedItems.Contains(0))
-                    {
-                        foreach (var itemId in selectedItems)
-                        {
-                            var ingredient = await _context.Items.FindAsync(itemId);
-                            if (ingredient != null && quantities.TryGetValue(itemId, out double quantity))
-                            {
-                                recipe.Ingredients.Add(new RecipeItem
-                                {
-                                    ItemId = itemId,
-                                    Quantity = quantity,
-                                    RecipeId = recipe.RecipeId
-                                });
-                            }
-                        }
+                        // If it's a base item, remove all recipes
+                        existingItem.Recipes.Clear();
                     }
 
                     _context.Update(existingItem);
