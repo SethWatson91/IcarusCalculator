@@ -26,8 +26,7 @@ else
 }
 
 <!-- Form for selecting recipe and quantity -->
-<form asp-action="Details" method="post">
-    <input type="hidden" asp-for="Item.ItemId" />
+<form asp-action="Details" asp-route-id="@Model.Item.ItemId" method="post">
     <div class="form-group">
         <label for="selectedRecipeId">Select Recipe:</label>
         <select asp-for="SelectedRecipeId" asp-items="Model.AvailableRecipes" class="form-control" style="width:33%">
@@ -38,6 +37,26 @@ else
         <label for="quantity">Quantity:</label>
         <input asp-for="Quantity" type="number" step="0.1" min="0" class="form-control" style="width:33%" />
     </div>
+    @if (Model.RecipeChoiceRows != null && Model.RecipeChoiceRows.Any()){
+        <h3>Intermediate recipe choices</h3>
+        @foreach (var row in Model.RecipeChoiceRows)
+        {
+            <div class="form-group" style="width:33%">
+                <label>@row.ItemName:</label>
+
+                <select class="form-control"
+                    name="recipeChoiceByItemId[@(row.ItemId)]">
+                @foreach (var opt in row.RecipeOptions)
+                {
+                    <option value="@opt.Value"
+                                selected="@(row.SelectedRecipeId?.ToString() == opt.Value ? "selected" : null)">
+                        @opt.Text
+                    </option>
+                }
+                </select>
+            </div>
+        }
+    }
     <button type="submit" class="btn btn-primary">Calculate</button>
 </form>
 

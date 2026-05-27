@@ -28,19 +28,20 @@ namespace Icarus_Item_Calculator.Services
             }
         }
 
-        public (List<RecipeStep>, Dictionary<string, double>) CalculateRecipeSteps(Recipe recipe, double quantity)
+        public (List<RecipeStep>, Dictionary<string, double>) CalculateRecipeSteps(
+            Recipe recipe,
+            double quantity,
+            Dictionary<int, int>? recipeChoiceByItemId)
         {
             List<RecipeStep> steps = [];
             Dictionary<string, double> baseItemsTotal = [];
-            CalculateStepsRecursive(recipe, quantity, steps, [], baseItemsTotal);
+            CalculateStepsRecursive(recipe, quantity, steps, [], baseItemsTotal, recipeChoiceByItemId);
             return (steps, baseItemsTotal);
         }
 
         private static void CalculateStepsRecursive(Recipe recipe, double quantity, List<RecipeStep> steps,
-            Dictionary<int, Dictionary<string, double>> accumulatedIngredients, Dictionary<string, double> baseItemsTotal)
+            Dictionary<int, Dictionary<string, double>> accumulatedIngredients, Dictionary<string, double> baseItemsTotal, Dictionary<int, int>? recipeChoiceByItemId)
         {
-            if (recipe == null || recipe.Item == null) return;
-
             accumulatedIngredients[recipe.RecipeId] = [];
 
             steps.Add(new RecipeStep
@@ -74,14 +75,64 @@ namespace Icarus_Item_Calculator.Services
                 }).ToList()
             });
 
-            foreach (var recipeItem in recipe.Ingredients.Where(r => !r.Item.IsBaseItem))
+            foreach (var recipeItem in recipe.Ingredients.Where(r => r.Item != null && !r.Item.IsBaseItem))
             {
-                var firstRecipe = recipeItem.Item.Recipes.FirstOrDefault(); // Use the first recipe for simplicity
-                if (firstRecipe != null)
+                var craftedItem = recipeItem.Item;
+                
+                Recipe? chosenRecipe = null;
+
+                if (recipeChoiceByItemId != null && recipeChoiceByItemId.TryGetValue(craftedItem.ItemId, out var chosenRecipeId))
                 {
-                    CalculateStepsRecursive(firstRecipe, recipeItem.Quantity * quantity, steps, accumulatedIngredients, baseItemsTotal);
+                    chosenRecipe = craftedItem.Recipes?.FirstOrDefault(r => r.RecipeId == chosenRecipeId);
                 }
+
+                chosenRecipe ??= craftedItem.Recipes?.FirstOrDefault();
+
+                if ( chosenRecipe == null)
+                {
+                    // This is 1.5 (missing recipe) — for now just skip or throw
+                    continue;
+                }
+                CalculateStepsRecursive(
+                    chosenRecipe,
+                    recipeItem.Quantity * quantity,
+                    steps,
+                    accumulatedIngredients,
+                    baseItemsTotal,
+                    recipeChoiceByItemId);
             }
+        }
+        public List<Item> CollectCraftedItemsNeedingChoice(Recipe rootRecipe)
+        {
+            var result = new Dictionary<int, Item>();
+            var visitedRecipeIds = new HashSet<int>();
+
+            void WalkRecipe(Recipe recipe)
+            {
+                if (!visitedRecipeIds.Add(recipe.RecipeId)) return; // Avoid cycles
+
+                foreach (var ri in recipe.Ingredients)
+                {
+                    if (ri.Item == null) continue;
+                    if (ri.Item.IsBaseItem) continue;
+
+                    // This ingredient is crafted. If it has >1 recipe, user should pick.
+                    if (ri.Item.Recipes != null && ri.Item.Recipes.Count > 1)
+                        result[ri.Item.ItemId] = ri.Item;
+
+                    // Walk into all recipes so we can discover deeper crafted items too.
+                    if (ri.Item.Recipes != null)
+                    {
+                        foreach (var childRecipe in ri.Item.Recipes)
+                        {
+                            WalkRecipe(childRecipe);
+                        }
+                    }
+                }
+
+            }
+            WalkRecipe(rootRecipe);
+            return result.Values.OrderBy(i => i.Name).ToList();
         }
     }
 }

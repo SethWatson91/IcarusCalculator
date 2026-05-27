@@ -10,5 +10,7 @@ namespace Icarus_Item_Calculator.Models
         public Dictionary<string, double> BaseItemsTotal { get; set; }
         public int? SelectedRecipeId { get; set; } // Nullable to allow "no selection" initially
         public List<SelectListItem> AvailableRecipes { get; set; } // For the dropdown
+        public Dictionary<int, int> RecipeChoiceByItemId { get; set; } = [];
+        public List<RecipeChoiceRow> RecipeChoiceRows { get; set; } = [];
     }
 }
