@@ -7,17 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Icarus_Item_Calculator.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ItemContext context, ItemServices itemServices) : Controller
     {
-        private readonly ItemContext _context;
-        private readonly ItemServices _itemServices;
-
-
-        public HomeController(ItemContext context, ItemServices itemServices)
-        {
-            _context = context;
-            _itemServices = itemServices;
-        }
+        private readonly ItemContext _context = context;
+        private readonly ItemServices _itemServices = itemServices;
 
 
         // GET: Home/Index
@@ -40,22 +33,13 @@ namespace Icarus_Item_Calculator.Controllers
                 items = items.Where(s => s.Name.Contains(searchString));
             }
 
-            switch (sortOrder)
+            items = sortOrder switch
             {
-                case "name_desc":
-                    items = items.OrderByDescending(i => i.Name);
-                    break;
-                case "Id":
-                    items = items.OrderBy(i => i.ItemId);
-                    break;
-                case "id_desc":
-                    items = items.OrderByDescending(i => i.ItemId);
-                    break;
-                default:
-                    items = items.OrderBy(i => i.Name);
-                    break;
-            }
-
+                "name_desc" => items.OrderByDescending(i => i.Name),
+                "Id" => items.OrderBy(i => i.ItemId),
+                "id_desc" => items.OrderByDescending(i => i.ItemId),
+                _ => items.OrderBy(i => i.Name),
+            };
             return View(await items.AsNoTracking().ToListAsync());
         }
 
@@ -66,6 +50,7 @@ namespace Icarus_Item_Calculator.Controllers
         {
             // Pass the list of items for ingredient selection
             ViewData["AvailableItems"] = _context.Items
+                .OrderBy(i => i.Name)
                 .Select(i => new SelectListItem
                 {
                     Value = i.ItemId.ToString(),
@@ -76,7 +61,7 @@ namespace Icarus_Item_Calculator.Controllers
             // Set up AvailableRecipes with only "Create New Recipe" for a new item
             ViewData["AvailableRecipes"] = new List<SelectListItem>
     {
-        new SelectListItem
+        new()
         {
             Value = "new",
             Text = "Create New Recipe"
@@ -98,11 +83,13 @@ namespace Icarus_Item_Calculator.Controllers
                 var newItem = new Item
                 {
                     Name = item.Name,
-                    IsBaseItem = item.IsBaseItem,
-                    Recipes = new List<Recipe>()
+                    Recipes = []
                 };
 
-                if (selectedRecipe == "new" && selectedItems != null && selectedItems.Any() && !selectedItems.Contains(0))
+                bool isBaseItem = selectedItems != null && selectedItems.Contains(0);
+                newItem.IsBaseItem = isBaseItem;
+
+                if (!isBaseItem && selectedRecipe == "new" && selectedItems != null && selectedItems.Length != 0)
                 {
                     var recipe = new Recipe { Item = newItem };
                     newItem.Recipes.Add(recipe);
@@ -129,6 +116,7 @@ namespace Icarus_Item_Calculator.Controllers
 
             // Repopulate ViewData if validation fails
             ViewData["AvailableItems"] = _context.Items
+                .OrderBy(i => i.Name)
                 .Select(i => new SelectListItem
                 {
                     Value = i.ItemId.ToString(),
@@ -137,7 +125,7 @@ namespace Icarus_Item_Calculator.Controllers
                 .ToList();
             ViewData["AvailableRecipes"] = new List<SelectListItem>
             {
-                new SelectListItem
+                new()
                 {
                     Value = "new",
                     Text = "Create New Recipe"
@@ -169,6 +157,7 @@ namespace Icarus_Item_Calculator.Controllers
 
             // Pass the list of items for ingredient selection
             ViewData["AvailableItems"] = _context.Items
+                .OrderBy(i => i.Name)
                 .Select(i => new SelectListItem
                 {
                     Value = i.ItemId.ToString(),
@@ -222,41 +211,51 @@ namespace Icarus_Item_Calculator.Controllers
                     }
 
                     existingItem.Name = item.Name;
-                    existingItem.IsBaseItem = item.IsBaseItem;
+                    bool isBaseItem = selectedItems != null && selectedItems.Contains(0);
+                    existingItem.IsBaseItem = isBaseItem;
 
-                    Recipe recipe;
-                    if (selectedRecipe == "new")
+                    if (!isBaseItem)
                     {
-                        recipe = new Recipe { ItemId = existingItem.ItemId };
-                        existingItem.Recipes.Add(recipe);
+                        Recipe recipe;
+                        if (selectedRecipe == "new")
+                        {
+                            recipe = new Recipe { ItemId = existingItem.ItemId };
+                            existingItem.Recipes.Add(recipe);
+                        }
+                        else
+                        {
+                            int recipeId = int.Parse(selectedRecipe);
+                            recipe = existingItem.Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
+                            if (recipe == null)
+                            {
+                                return NotFound();
+                            }
+                        }
+
+                        // Clear and update ingredients
+
+                        recipe.Ingredients.Clear();
+                        if (selectedItems != null && selectedItems.Length != 0)
+                        {
+                            foreach (var itemId in selectedItems)
+                            {
+                                var ingredient = await _context.Items.FindAsync(itemId);
+                                if (ingredient != null && quantities.TryGetValue(itemId, out double quantity))
+                                {
+                                    recipe.Ingredients.Add(new RecipeItem
+                                    {
+                                        ItemId = itemId,
+                                        Quantity = quantity,
+                                        RecipeId = recipe.RecipeId
+                                    });
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        int recipeId = int.Parse(selectedRecipe);
-                        recipe = existingItem.Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
-                        if (recipe == null)
-                        {
-                            return NotFound();
-                        }
-                    }
-
-                    // Clear and update ingredients
-                    recipe.Ingredients.Clear();
-                    if (selectedItems != null && selectedItems.Any() && !selectedItems.Contains(0))
-                    {
-                        foreach (var itemId in selectedItems)
-                        {
-                            var ingredient = await _context.Items.FindAsync(itemId);
-                            if (ingredient != null && quantities.TryGetValue(itemId, out double quantity))
-                            {
-                                recipe.Ingredients.Add(new RecipeItem
-                                {
-                                    ItemId = itemId,
-                                    Quantity = quantity,
-                                    RecipeId = recipe.RecipeId
-                                });
-                            }
-                        }
+                        // If it's a base item, remove all recipes
+                        existingItem.Recipes.Clear();
                     }
 
                     _context.Update(existingItem);
@@ -278,6 +277,7 @@ namespace Icarus_Item_Calculator.Controllers
 
             // Repopulate ViewData if validation fails
             ViewData["AvailableItems"] = _context.Items
+                .OrderBy(i => i.Name)
                 .Select(i => new SelectListItem
                 {
                     Value = i.ItemId.ToString(),
@@ -293,7 +293,7 @@ namespace Icarus_Item_Calculator.Controllers
                     Value = r.RecipeId.ToString(),
                     Text = $"Recipe #{r.RecipeId}"
                 })
-                .ToList() ?? new List<SelectListItem>();
+                .ToList() ?? [];
             availableRecipes.Add(new SelectListItem
             {
                 Value = "new",
@@ -404,7 +404,7 @@ namespace Icarus_Item_Calculator.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
                 // Check if the item is used as an ingredient in any RecipeItem
                 if (_context.RecipeItems.Any(ri => ri.ItemId == id))
@@ -439,7 +439,7 @@ namespace Icarus_Item_Calculator.Controllers
             var model = new ItemWithStepsViewModel
             {
                 Item = item,
-                RecipeSteps = new List<RecipeStep>(),
+                RecipeSteps = [],
                 Quantity = 1,
                 AvailableRecipes = item.Recipes.Select(r => new SelectListItem
                 {
@@ -449,12 +449,37 @@ namespace Icarus_Item_Calculator.Controllers
             };
 
             // Optionally pre-select the first recipe and calculate its steps
-            if (item.Recipes.Any())
+            if (item.Recipes.Count != 0)
             {
                 model.SelectedRecipeId = item.Recipes.First().RecipeId;
                 var recipe = item.Recipes.First();
                 await _itemServices.LoadNestedRecipesAsync(recipe);
-                var (recipeSteps, baseItemsTotal) = _itemServices.CalculateRecipeSteps(recipe, model.Quantity);
+
+                // NEW: figure out which intermediate items need choices
+                var craftedItems = _itemServices.CollectCraftedItemsNeedingChoice(recipe);
+
+                model.RecipeChoiceRows = craftedItems.Select(ci =>
+                {
+                    var options = ci.Recipes.Select(r => new SelectListItem
+                    {
+                        Value = r.RecipeId.ToString(),
+                        Text = $"Recipe #{r.RecipeId}"
+                    }).ToList();
+                    var defaultRecipeId = ci.Recipes.First().RecipeId;
+                    return new RecipeChoiceRow
+                    {
+                        ItemId = ci.ItemId,
+                        ItemName = ci.Name,
+                        SelectedRecipeId = defaultRecipeId,
+                        RecipeOptions = options
+                    };
+                }).ToList();
+                model.RecipeChoiceByItemId = model.RecipeChoiceRows
+                    .Where(r => r.SelectedRecipeId.HasValue)
+                    .ToDictionary(r => r.ItemId, r => r.SelectedRecipeId!.Value);
+                // CHANGED: pass the dictionary into the calculator
+                var (recipeSteps, baseItemsTotal) =
+                    _itemServices.CalculateRecipeSteps(recipe, model.Quantity, model.RecipeChoiceByItemId);
                 model.RecipeSteps = recipeSteps;
                 model.BaseItemsTotal = baseItemsTotal;
             }
@@ -465,7 +490,10 @@ namespace Icarus_Item_Calculator.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> Details(int id, double quantity, int? selectedRecipeId)
+        public async Task<IActionResult> Details(int id,
+            double quantity,
+            int? selectedRecipeId,
+            [FromForm(Name = "recipeChoiceByItemId")]Dictionary<int, int> recipeChoiceByItemId)
         {
             var item = await _context.Items
                 .Include(i => i.Recipes)
@@ -481,30 +509,60 @@ namespace Icarus_Item_Calculator.Controllers
             var model = new ItemWithStepsViewModel
             {
                 Item = item,
-                RecipeSteps = new List<RecipeStep>(),
+                RecipeSteps = [],
                 Quantity = quantity,
                 AvailableRecipes = item.Recipes.Select(r => new SelectListItem
                 {
                     Value = r.RecipeId.ToString(),
                     Text = $"Recipe #{r.RecipeId}"
                 }).ToList(),
-                SelectedRecipeId = selectedRecipeId
+                SelectedRecipeId = selectedRecipeId,
+                RecipeChoiceByItemId = recipeChoiceByItemId ?? new Dictionary<int, int>()
             };
 
-            if (selectedRecipeId.HasValue)
+            if (!selectedRecipeId.HasValue)
             {
-                var selectedRecipe = item.Recipes.FirstOrDefault(r => r.RecipeId == selectedRecipeId.Value);
-                if (selectedRecipe != null)
-                {
-                    await _itemServices.LoadNestedRecipesAsync(selectedRecipe);
-                    var (recipeSteps, baseItemsTotal) = _itemServices.CalculateRecipeSteps(selectedRecipe, quantity);
-                    model.RecipeSteps = recipeSteps;
-                    model.BaseItemsTotal = baseItemsTotal;
-                }
+                return View(model);
             }
 
+            var selectedRecipe = item.Recipes.FirstOrDefault(r => r.RecipeId == selectedRecipeId.Value);
+            if (selectedRecipe == null)
+            {
+                return View(model);
+            }
+            await _itemServices.LoadNestedRecipesAsync(selectedRecipe);
+
+            var craftedItems = _itemServices.CollectCraftedItemsNeedingChoice(selectedRecipe);
+
+            model.RecipeChoiceRows = craftedItems.Select(ci =>
+            {
+                var options = ci.Recipes.Select(r => new SelectListItem
+                {
+                    Value = r.RecipeId.ToString(),
+                    Text = $"Recipe #{r.RecipeId}"
+                }).ToList();
+                model.RecipeChoiceByItemId.TryGetValue(ci.ItemId, out int selectedId);
+                return new RecipeChoiceRow
+                {
+                    ItemId = ci.ItemId,
+                    ItemName = ci.Name,
+                    SelectedRecipeId = selectedId != 0 ? selectedId : (int?)null,
+                    RecipeOptions = options
+                };
+            }).ToList();
+
+            model.RecipeChoiceByItemId = model.RecipeChoiceRows
+                .Where(r => r.SelectedRecipeId.HasValue)
+                .ToDictionary(r => r.ItemId, r => r.SelectedRecipeId!.Value);
+
+            var (recipeSteps, baseItemsTotal) = _itemServices.CalculateRecipeSteps(selectedRecipe, quantity, model.RecipeChoiceByItemId);
+
+            model.RecipeSteps = recipeSteps;
+            model.BaseItemsTotal = baseItemsTotal;
             return View(model);
         }
+
+
         private async Task LoadNestedRecipesAsync(Recipe recipe)
         {
             foreach (var recipeItem in recipe.Ingredients)

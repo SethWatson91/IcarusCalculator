@@ -2,6 +2,7 @@ using Icarus_Item_Calculator.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Icarus_Item_Calculator.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
