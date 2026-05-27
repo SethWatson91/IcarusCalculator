@@ -35,16 +35,28 @@
         </select>
     </div>
 
-    <!-- Ingredients Selection -->
+    <!-- Ingredients Checkbox List -->
     <div class="form-group">
-        <label for="selectedItems" class="control-label">Recipe Ingredients</label>
-        <select id="selectedItems" name="selectedItems" class="form-control" multiple>
-            <option value="0">No Recipe</option>
+        <label class="control-label">Recipe Ingredients</label>
+
+        <!-- "No Recipe" option -->
+        <div class="form-check">
+            <input class="form-check-input ingredient-checkbox" type="checkbox"
+                   name="selectedItems" value="0" id="item_0" />
+            <label class="form-check-label" for="item_0">No Recipe (Base Item)</label>
+        </div>
+
+        <!-- Scrollable checkbox container -->
+        <div id="ingredientCheckboxList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; border-radius: .25rem; padding: 8px; margin-top: 4px;">
             @foreach (var item in availableItems)
             {
-                <option value="@item.Value">@item.Text</option>
+                <div class="form-check">
+                    <input class="form-check-input ingredient-checkbox" type="checkbox"
+                           name="selectedItems" value="@item.Value" id="item_@item.Value" />
+                    <label class="form-check-label" for="item_@item.Value">@item.Text</label>
+                </div>
             }
-        </select>
+        </div>
     </div>
 
     <!-- Quantities -->

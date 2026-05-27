@@ -561,27 +561,5 @@ namespace Icarus_Item_Calculator.Controllers
             model.BaseItemsTotal = baseItemsTotal;
             return View(model);
         }
-
-
-        private async Task LoadNestedRecipesAsync(Recipe recipe)
-        {
-            foreach (var recipeItem in recipe.Ingredients)
-            {
-                if (recipeItem.Item != null)
-                {
-                    await _context.Entry(recipeItem.Item)
-                        .Collection(i => i.Recipes)
-                        .Query()
-                        .Include(r => r.Ingredients)
-                        .ThenInclude(ri => ri.Item)
-                        .LoadAsync();
-
-                    foreach (var nestedRecipe in recipeItem.Item.Recipes)
-                    {
-                        await LoadNestedRecipesAsync(nestedRecipe);
-                    }
-                }
-            }
-        }
     }
 }

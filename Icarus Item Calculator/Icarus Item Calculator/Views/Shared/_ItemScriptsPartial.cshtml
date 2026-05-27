@@ -1,71 +1,90 @@
 ﻿<script>
     $(document).ready(function () {
         const selectedRecipe = $('#selectedRecipe');
-        const selectedItems = $('#selectedItems');
-        const quantitiesContainer = $('#quantitiesContainer');
         const deleteRecipeButton = $('#deleteRecipeButton');
         const deleteRecipeId = $('#deleteRecipeId');
 
-        // Function to update ingredients based on recipe ID
-        function updateIngredients(recipeId) {
-            if (recipeId && recipeId !== "new") {
-                $.getJSON(`/Home/GetRecipeIngredients?recipeId=${recipeId}`, function (data) {
-                    selectedItems.val([]); // Clear current selection
-                    $('.quantity-input').hide(); // Hide all quantity inputs
-                    data.forEach(function (ingredient) {
-                        selectedItems.find(`option[value="${ingredient.itemId}"]`).prop('selected', true);
-                        const quantityInput = $(`.quantity-input[data-item-id="${ingredient.itemId}"] input`);
-                        quantityInput.val(ingredient.quantity);
-                        quantityInput.parent().show();
-                    });
-                    selectedItems.trigger('change'); // Trigger change to update visibility
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    console.error("Failed to load ingredients: " + textStatus + " - " + errorThrown);
-                });
+        // Show/hide quantity input for a single item
+        function setIngredientVisibility(itemId, visible) {
+            const qtyInput = $(`.quantity-input[data-item-id="${itemId}"]`);
+            if (visible) {
+                qtyInput.show();
             } else {
-                selectedItems.val([]); // Clear selection for new recipe
-                $('.quantity-input').hide(); // Hide all quantities
-                selectedItems.trigger('change'); // Trigger change to update visibility
+                qtyInput.hide();
+                qtyInput.find('input').val(0);
             }
         }
 
-        // Update quantities based on ingredient selection
-        selectedItems.change(function () {
-            var selectedIds = $(this).val();
-            $('.quantity-input').hide();
-            if (selectedIds && selectedIds.length > 0 && !selectedIds.includes("0")) {
-                selectedIds.forEach(function (id) {
-                    $('.quantity-input[data-item-id="' + id + '"]').show();
+        // Uncheck all ingredient checkboxes and hide all quantity inputs
+        function clearAllIngredients() {
+            $('.ingredient-checkbox').prop('checked', false);
+            $('.quantity-input').hide().find('input').val(0);
+        }
+
+        // Load ingredients from the server for an existing recipe and check the right boxes
+        function updateIngredients(recipeId) {
+            clearAllIngredients();
+            if (recipeId && recipeId !== 'new' && recipeId !== '') {
+                $.getJSON(`/Home/GetRecipeIngredients?recipeId=${recipeId}`, function (data) {
+                    data.forEach(function (ingredient) {
+                        const checkbox = $(`#item_${ingredient.itemId}`);
+                        checkbox.prop('checked', true);
+                        const qtyInput = $(`.quantity-input[data-item-id="${ingredient.itemId}"] input`);
+                        qtyInput.val(ingredient.quantity);
+                        qtyInput.parent().show();
+                    });
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error('Failed to load ingredients: ' + textStatus + ' - ' + errorThrown);
                 });
+            }
+        }
+
+        // When a checkbox changes, show/hide its quantity input
+        // "No Recipe" (value=0) checkbox also unchecks everything else
+        $(document).on('change', '.ingredient-checkbox', function () {
+            const val = $(this).val();
+            const checked = $(this).is(':checked');
+
+            if (val === '0') {
+                // "No Recipe" selected — uncheck all others
+                if (checked) {
+                    $('.ingredient-checkbox').not(this).prop('checked', false);
+                    $('.quantity-input').hide().find('input').val(0);
+                }
+            } else {
+                // Regular ingredient toggled — uncheck "No Recipe"
+                if (checked) {
+                    $('#item_0').prop('checked', false);
+                }
+                setIngredientVisibility(val, checked);
             }
         });
 
-        // Update ingredients when recipe changes and manage delete button
+        // When recipe dropdown changes, reload ingredients and manage delete button
         selectedRecipe.change(function () {
-            var recipeId = $(this).val();
+            const recipeId = $(this).val();
             updateIngredients(recipeId);
-            // Enable delete button only for existing recipes
-            if (recipeId && recipeId !== "new" && recipeId !== "") {
+            if (recipeId && recipeId !== 'new' && recipeId !== '') {
                 deleteRecipeId.val(recipeId);
                 deleteRecipeButton.prop('disabled', false);
             } else {
-                deleteRecipeId.val("");
+                deleteRecipeId.val('');
                 deleteRecipeButton.prop('disabled', true);
             }
         });
 
         // Confirm deletion
         $('#deleteRecipeForm').submit(function (e) {
-            if (!confirm("Are you sure you want to delete this recipe?")) {
+            if (!confirm('Are you sure you want to delete this recipe?')) {
                 e.preventDefault();
             }
         });
 
-        // Update ingredients and delete button on page load
-        var initialRecipeId = selectedRecipe.val();
+        // On page load, pre-populate if a recipe is already selected
+        const initialRecipeId = selectedRecipe.val();
         if (initialRecipeId) {
             updateIngredients(initialRecipeId);
-            if (initialRecipeId !== "new" && initialRecipeId !== "") {
+            if (initialRecipeId !== 'new' && initialRecipeId !== '') {
                 deleteRecipeId.val(initialRecipeId);
                 deleteRecipeButton.prop('disabled', false);
             }
